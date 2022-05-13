@@ -13,10 +13,6 @@
 
   1. [案例](#案例) 
   1. [调用](#调用)
-  1. [Objects](#objects)
-  1. [Arrays](#arrays)
-  1. [Resources](#resources)
-
 ## 案例
  这是一个简单的调用例子，实现了复读机的功能
 ```python
