@@ -2,7 +2,7 @@
 
 *介绍本项目的注意事项&主体结构*
 
-**注意**本项目基于**开源软件** [Mirai](`https://github.com/mamoe/mirai`) 进行二次开发
+**注意**本项目基于**开源软件** [Mirai](https://github.com/mamoe/mirai) 进行二次开发
 
 
 ![Downloads](https://img.shields.io/github/downloads/ExMikuPro/easyMirai/total)
