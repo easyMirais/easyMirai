@@ -22,7 +22,7 @@ import  easyMirai
     
     
 if __name__ == '__main__':
-mirai = easyMirai.Mirai("YouHost", "YouPort", "YouKey", "YouQid")  # 初始化机器
+mirai = easyMirai.Mirai("YouHost", "YouPort", "YouKey", "YouQid") 
 print(mirai.begin())
 while True:
     mirai.delay()
