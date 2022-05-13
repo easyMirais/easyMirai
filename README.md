@@ -1,8 +1,9 @@
 # easyMirai
 
-*斜体，一句话说明文章简介*
+*介绍本项目的注意事项&主体结构*
 
-> **注意**: 这里是阅读前需要注意的内容[Babel](https://babeljs.io)
+**注意**本项目基于**开源软件** [Mirai](`https://github.com/mamoe/mirai`) 进行二次开发
+
 
 ![Downloads](https://img.shields.io/github/downloads/ExMikuPro/easyMirai/total)
 [![](https://img.shields.io/badge/blog-@Sfnco-ff69b4.svg)](https://sfnco.com.cn)
@@ -12,7 +13,8 @@
 ## 目录
 
   1. [案例](#案例) 
-  1. [调用](#调用)
+  2. [调用](#调用)
+  3. [声明](#声明)
 ## 案例
  这是一个简单的调用例子，实现了复读机的功能
 ```python
@@ -48,3 +50,10 @@ if message == "test":
 ```
 
 **[⬆ back to top](#目录)**
+
+## 声明
+本项目基于**开源软件** [Mirai](`https://github.com/mamoe/mirai`) 进行二次开发
+> 不得扭曲或隐藏免费且开源的事实
+
+**本项目使用AGPLv3**
+
