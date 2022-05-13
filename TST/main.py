@@ -6,5 +6,7 @@ if __name__ == '__main__':
     while True:
         mirai.delay()
         if mirai.getCountMessage()['data'] != 0:
-            message = mirai.getFetchLatestMessage()
-            print(message)
+            message = mirai.getFetchLatestMessageFormat()
+            if message['From'] == "FriendMessage":
+                msg = {'type': 'Plain', "text": message['Plain'][0]}
+                mirai.sendFriendMessage(msg, message['Sender'])
