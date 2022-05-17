@@ -6,7 +6,7 @@ import json
 
 class Init:
     # 初始化所有参数类
-    def __init__(self, host: str, port: str, key: str, qid: str, count: str = 1, debug: bool = False, times: int = 1):
+    def __init__(self, host: str, port: str, key: str, qid: str, count: str = "1", debug: bool = False, times: int = 1):
         self.host = host
         self.port = port
         self.key = key
@@ -121,7 +121,7 @@ class Message(Setup):
             self.Debug("连接请求失败！请检查网络配置！", 2)
             sys.exit()
 
-    def getFetchMessage(self) -> str:
+    def getFetchMessage(self) -> dict:
         # 获取队列头部消息后移除
         params = {
             "sessionKey": self.session,
@@ -211,6 +211,53 @@ class Message(Setup):
                 return request['data']
             else:
                 self.Debug("获取队列尾部信息失败！", 1)
+                self.Debug(request['msg'], 1)
+                sys.exit()
+        else:
+            self.Debug("连接请求失败！请检查网络配置！", 2)
+            sys.exit()
+
+    def getGroupList(self, target: str):
+        # 获取队列尾部消息后不移除
+        params = {
+            "sessionKey": self.session,
+            "target": target
+        }
+        headers = {
+            'Connection': 'close'
+        }
+        request = requests.get(url=self.host + ":" + self.port + "/memberList", params=params, headers=headers)
+        if request.status_code == 200:
+            request = json.loads(request.text)
+            if request['code'] == 0:
+                self.Debug(request, 5)
+                self.Debug("获取群成员列表成功！", 0)
+                return request
+            else:
+                self.Debug("获取群成员列表失败！", 1)
+                self.Debug(request['msg'], 1)
+                sys.exit()
+        else:
+            self.Debug("连接请求失败！请检查网络配置！", 2)
+            sys.exit()
+
+    def getFriendList(self):
+        # 获取Bot好友列表
+        params = {
+            "sessionKey": self.session
+        }
+        headers = {
+            'Connection': 'close'
+        }
+        request = requests.get(url=self.host + ":" + self.port + "/friendList", params=params, headers=headers)
+        if request.status_code == 200:
+            request = json.loads(request.text)
+            if request['code'] == 0:
+                self.Debug(request, 5)
+                self.Debug("获取Bot好友列表成功！", 0)
+                return request
+            else:
+                self.Debug("获取Bot好友列表失败！", 1)
                 self.Debug(request['msg'], 1)
                 sys.exit()
         else:
