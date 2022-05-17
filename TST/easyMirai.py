@@ -1,3 +1,11 @@
+# -*- coding: utf-8 -*-
+
+"""
+author: HexMikuMax & ExMikuPro
+data: 2022/05/17
+version: Alpha 0.1
+"""
+
 import sys
 import time
 import requests
