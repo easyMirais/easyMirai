@@ -414,7 +414,7 @@ class Mirai(formatMessage):
             if request['code'] == 0:
                 self.Debug(request, 5)
                 self.Debug("插件版本号获取成功！", 0)
-                return request
+                return request["data"]
             else:
                 self.Debug("插件版本号获取失败！", 1)
                 self.Debug(request['msg'], 1)
