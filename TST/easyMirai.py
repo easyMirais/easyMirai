@@ -84,7 +84,7 @@ class setup(Init):
             self.Debug("连接请求失败！请检查网络配置！", 2)
             sys.exit()
 
-    def Release(self):
+    def releaseSession(self):
         # 释放session到QQBot
         headers = {
             'Connection': 'close'
