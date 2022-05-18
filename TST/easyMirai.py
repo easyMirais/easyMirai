@@ -85,9 +85,25 @@ class setup(Init):
             sys.exit()
 
     def Release(self):
-        # 释放session
-        pass
-        self.Debug("正在注销Session", 1)
+        # 释放session到QQBot
+        headers = {
+            'Connection': 'close'
+        }
+        request = requests.post(url=self.host + ":" + self.port + "/release",
+                                data='{"sessionKey": "' + self.session + '","qq": ' + self.qid + '}', headers=headers)
+        if request.status_code == 200:
+            request = json.loads(request.text)
+            if request['code'] == 0:
+                self.Debug("session注销成功！", 0)
+                self.Debug(request, 5)
+                return self.session
+            else:
+                self.Debug("session注销失败！", 1)
+                self.Debug(request['msg'], 1)
+                sys.exit()
+        else:
+            self.Debug("连接请求失败！请检查网络配置！", 2)
+            sys.exit()
 
 
 class Message(setup):
@@ -103,9 +119,6 @@ class Message(setup):
 
     getPeekLatestMessage:获取队列尾部消息后不移除即获取最新消息
 
-    sendFriendMessage:发送好友消息
-
-    sendGroupMessage:发送群消息
     """
 
     def getCountMessage(self):
