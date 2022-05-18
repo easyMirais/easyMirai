@@ -589,7 +589,7 @@ class other(group):
             'Connection': 'close'
         }
         massage = '{"sessionKey":"' + self.session + '","target":' + tar + '}"'
-        request = requests.post(url=self.host + ":" + self.port + "/sendNudge", data=str(massage),
+        request = requests.post(url=self.host + ":" + self.port + "/reCall", data=str(massage),
                                 headers=headers)
         if request.status_code == 200:
             request = json.loads(request.text)
@@ -608,15 +608,16 @@ class other(group):
 
 class file(other):
     # 文件操作类
-    def uploadImage(self, type: str, files):
+    def uploadImage(self, types: str, files: str):
         # 上传图片文件
         headers = {
             'Connection': 'close'
         }
-        massage = '{"sessionKey":"' + self.session + '","type":' + type + '}"'
-        onfiles = {'img': ('send.png', open(files, 'rb'), 'image/png', {})}
-        request = requests.post(url=self.host + ":" + self.port + "/sendNudge", data=str(massage),
-                                headers=headers, files=onfiles)
+        massage = {"sessionKey": self.session, "type": types}
+        onFiles = {'img': ('send.png', open(files, 'rb'), 'image/png', {})}
+        request = requests.request(method="POST",
+                                   url=self.host + ":" + self.port + "/uploadImage", data=massage,
+                                   headers=headers, files=onFiles)
         if request.status_code == 200:
             request = json.loads(request.text)
             self.Debug(request, 5)
@@ -629,7 +630,7 @@ class file(other):
 
 class Mirai(file):
     # 框架相关操作类
-    def version(self) -> str:
+    def version(self) -> dict:
         # 获取插件版本号
         headers = {
             'Connection': 'close'
