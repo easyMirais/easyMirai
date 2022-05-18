@@ -647,3 +647,5 @@ class Mirai(file):
                 self.Debug(request['msg'], 1)
         else:
             self.Debug("连接请求失败！请检查网络配置！", 2)
+
+
