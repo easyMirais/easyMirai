@@ -561,12 +561,12 @@ class group(friend):
 
 class other(group):
     # 其他操作类
-    def sendNudge(self, subject: str, tar: str, kind: str):
+    def sendNudge(self, sub: str, tar: str, ki: str):
         # 发送戳一戳消息
         headers = {
             'Connection': 'close'
         }
-        massage = '{"sessionKey":"' + self.session + '","target":' + tar + ',"subject":' + subject + ',"kind":' + kind + '}"'
+        massage = '{"sessionKey":"' + self.session + '","target":' + tar + ',"subject":' + sub + ',"kind":' + ki + '}"'
         request = requests.post(url=self.host + ":" + self.port + "/sendNudge", data=str(massage),
                                 headers=headers)
         if request.status_code == 200:
@@ -647,5 +647,3 @@ class Mirai(file):
                 self.Debug(request['msg'], 1)
         else:
             self.Debug("连接请求失败！请检查网络配置！", 2)
-
-
