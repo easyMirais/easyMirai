@@ -23,14 +23,14 @@ import easyMirai
 
 if __name__ == '__main__':
     mirai = easyMirai.Mirai("YouHost", "YouPort", "YouKey", "YouQid")
-print(mirai.begin())
-while True:
-    mirai.delay()
-    if mirai.getCountMessage()['data'] != 0:
-        message = mirai.getFetchLatestMessageFormat()
-        if message['From'] == "FriendMessage":
-            msg = {'type': 'Plain', "text": message['Plain'][0]}
-            mirai.sendFriendMessage(msg, message['Sender'])
+    print(mirai.begin())
+    while True:
+        mirai.delay()
+        if mirai.getCountMessage()['data'] != 0:
+            message = mirai.getFetchLatestMessageFormat()
+            if message['From'] == "FriendMessage":
+                msg = {'type': 'Plain', "text": message['Plain'][0]}
+                mirai.sendFriendMessage(msg, message['Sender'])
 
 ```
 
