@@ -6,9 +6,9 @@ data: 2022/05/17
 version: Alpha 0.1
 """
 
+import json
 import sys
 import time
-import json
 
 import requests
 
@@ -572,6 +572,29 @@ class group(friend):
             self.Debug("连接请求失败！请检查网络配置！", 2)
             sys.exit()
 
+    def muteMember(self, target: str, menberId: str, times: str):
+        # 禁言群成员
+        headers = {
+            'Connection': 'close'
+        }
+        me = menberId
+        tar = target
+        data = '{"sessionKey":"' + self.session + '","target":' + tar + ',"memberId":' + me + ',"time":' + times + '}'
+        request = requests.post(url=self.host + ":" + self.port + "/mute", headers=headers, data=data)
+        if request.status_code == 200:
+            request = json.loads(request.text)
+            if request['code'] == 0:
+                self.Debug(request, 5)
+                self.Debug("群成员资料成功！", 0)
+                return request
+            else:
+                self.Debug("群成员资料失败！", 1)
+                self.Debug(request['msg'], 1)
+                sys.exit()
+        else:
+            self.Debug("连接请求失败！请检查网络配置！", 2)
+            sys.exit()
+
 
 class other(group):
     # 其他操作类
@@ -643,14 +666,11 @@ class file(other):
 
     def uploadVoice(self, files: str):
         # 上传音频文件(暂无法使用ing)
-        headers = {
-            'Connection': 'close'
-        }
         massage = {"sessionKey": self.session, "type": "group"}
         onFiles = {'voice': open(files, 'rb')}
         request = requests.request(method="POST",
-                                   url=self.host + ":" + self.port + "/uploadVoice", data=massage,
-                                   headers=headers, files=onFiles)
+                                   url=self.host + ":" + self.port + "/uploadVoice", data=massage
+                                   , files=onFiles)
         if request.status_code == 200:
             request = json.loads(request.text)
             self.Debug(request, 5)
