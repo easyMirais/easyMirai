@@ -8,8 +8,9 @@ version: Alpha 0.1
 
 import sys
 import time
-import requests
 import json
+
+import requests
 
 
 class Init:
@@ -635,6 +636,25 @@ class file(other):
             request = json.loads(request.text)
             self.Debug(request, 5)
             self.Debug("图片上传成功！", 0)
+            return request
+        else:
+            self.Debug("连接请求失败！请检查网络配置！", 2)
+            sys.exit()
+
+    def uploadVoice(self, files: str):
+        # 上传音频文件(暂无法使用ing)
+        headers = {
+            'Connection': 'close'
+        }
+        massage = {"sessionKey": self.session, "type": "group"}
+        onFiles = {'voice': open(files, 'rb')}
+        request = requests.request(method="POST",
+                                   url=self.host + ":" + self.port + "/uploadVoice", data=massage,
+                                   headers=headers, files=onFiles)
+        if request.status_code == 200:
+            request = json.loads(request.text)
+            self.Debug(request, 5)
+            self.Debug("语音上传成功！", 0)
             return request
         else:
             self.Debug("连接请求失败！请检查网络配置！", 2)
