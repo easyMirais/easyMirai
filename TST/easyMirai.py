@@ -667,7 +667,8 @@ class file(other):
     def uploadVoice(self, files: str):
         # 上传音频文件(暂无法使用ing)
         massage = {"sessionKey": self.session, "type": "group"}
-        onFiles = {'voice': open(files, 'rb')}
+        onFiles = {'voice': (files.split('/')[len(str(files).split('/')) - 1], open(files, 'rb'),
+                             f"voice/{files.split('.')[len(str(files).split('.')) - 1]}", {})}
         request = requests.request(method="POST",
                                    url=self.host + ":" + self.port + "/uploadVoice", data=massage
                                    , files=onFiles)
