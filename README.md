@@ -6,7 +6,6 @@
 
 **注意**本项目基于**开源软件** [Mirai](https://github.com/mamoe/mirai) 进行二次开发
 
-![Downloads](https://img.shields.io/github/downloads/ExMikuPro/easyMirai/total)
 [![](https://img.shields.io/badge/blog-@Sfnco-ff69b4.svg)](https://sfnco.com.cn)
 ![](https://img.shields.io/github/size/ExMikuPro/easyMirai/TST/easyMirai.py)
 
