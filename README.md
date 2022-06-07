@@ -35,6 +35,8 @@ if __name__ == '__main__':
 
 ```
 
+更多案例请查阅 **Example** 目录，我们将持续更新相关案例，以方便调用！
+
 **[⬆ back to top](#目录)**
 
 ## 调用
@@ -43,12 +45,12 @@ if __name__ == '__main__':
 
 ```python
 # bad
-if mirai.getFetchLatestMessageFormat() == "test":
+if mirai.getFetchLatestMessageFormat() == "text":
     ...
 
 # good
 message = mirai.getFetchLatestMessageFormat()
-if message == "test":
+if message == "text":
     ...
 ```
 
