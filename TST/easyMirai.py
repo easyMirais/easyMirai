@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 
 """
+一个是开发QBot更加简单的集成模块！
 author: HexMikuMax & ExMikuPro
-data: 2022/05/22
-version: Beta 1.1
+data: 2022/05/31
+version: Beta 1.3
 """
 
 import json
-import sys
 import time
 
 import requests
+from rich.console import Console
 
 
 class Init:
@@ -28,8 +29,20 @@ class Init:
     def Debug(self, msg, code: int):
         # 输出控制台
         # code: 0 成功 1 过程性错误 2 请求性错误 5 返回请求原数据
+        """
+        输出全部运行日志到控制台
+        :param msg: 日志信息
+        :param code: 错误等级
+        :return: None
+        """
         if self.debug:
-            print(msg, code)
+            c = Console()  # 初始化debug控制台输出模块
+            if code == 0:
+                c.log("[Notice]：", msg, style="#a4ff8f")
+            elif code == 1:
+                c.log("[Warning]：", msg, style="#f6ff8f")
+            elif code == 2:
+                c.log("[Error]：", msg, style="#ff8f8f")
 
 
 class setup(Init):
@@ -37,6 +50,10 @@ class setup(Init):
 
     def begin(self) -> str:
         # 初始化机器人
+        """
+        获取并绑定Session到Bot
+        :return: Bot: XXXX 初始化成功！
+        """
         self.getSession()
         self.bindSession()
         self.Debug("初始化成功！", 0)
@@ -44,6 +61,10 @@ class setup(Init):
 
     def getSession(self) -> str:
         # 获取session状态码
+        """
+        获取session码
+        :return:{'code': 0, 'session': 'XXXX'}
+        """
         headers = {
             'Connection': 'close'
         }
@@ -59,13 +80,16 @@ class setup(Init):
             else:
                 self.Debug("session获取失败！", 1)
                 self.Debug(request["msg"], 1)
-                sys.exit()
+
         else:
             self.Debug("连接请求失败！请检查网络配置！", 2)
-            sys.exit()
 
     def bindSession(self) -> str:
         # 绑定session到QQ机器人
+        """
+        绑定Session到QQ机器人
+        :return: XXXX
+        """
         headers = {
             'Connection': 'close'
         }
@@ -80,13 +104,16 @@ class setup(Init):
             else:
                 self.Debug("session绑定失败！", 1)
                 self.Debug(request['msg'], 1)
-                sys.exit()
+
         else:
             self.Debug("连接请求失败！请检查网络配置！", 2)
-            sys.exit()
 
     def releaseSession(self):
         # 释放session到QQBot
+        """
+        释放已经绑定Bot的Session
+        :return: {'code': 0, 'msg': 'success'}
+        """
         headers = {
             'Connection': 'close'
         }
@@ -97,33 +124,26 @@ class setup(Init):
             if request['code'] == 0:
                 self.Debug("session注销成功！", 0)
                 self.Debug(request, 5)
-                return self.session
+                return request
             else:
                 self.Debug("session注销失败！", 1)
                 self.Debug(request['msg'], 1)
-                sys.exit()
+
         else:
             self.Debug("连接请求失败！请检查网络配置！", 2)
-            sys.exit()
 
 
 class Message(setup):
     # 信息操作处理类
-    """
-    getCountMessage:获取信息列长度，即信息总条数
-
-    getFetchMessage:获取队列头部消息后移除即按时间顺序获取消息
-
-    getFetchLatestMessage:获取队列尾部消息后移除即获取最新消息
-
-    getPeekMessage:获取队列头部消息后不移除即按时间顺序获取消息
-
-    getPeekLatestMessage:获取队列尾部消息后不移除即获取最新消息
-
-    """
-
     def getCountMessage(self):
         # 获取消息列长度
+        """
+        获取消息队列的长度
+
+        需要进行实例化后调用！！！
+
+        :return: {'code': 0, 'msg': '', 'data': XXX}
+        """
         params = {
             "sessionKey": self.session
         }
@@ -142,10 +162,16 @@ class Message(setup):
                 self.Debug(request['msg'], 1)
         else:
             self.Debug("连接请求失败！请检查网络配置！", 2)
-            sys.exit()
 
     def getFetchMessage(self) -> dict:
         # 获取队列头部消息后移除
+        """
+        获取队列头部消息后移除
+
+        需要进行实例化后调用！！！
+
+        :return: 输出文字序列（以实际情况为准）
+        """
         params = {
             "sessionKey": self.session,
             "count": self.count
@@ -163,13 +189,19 @@ class Message(setup):
             else:
                 self.Debug("获取队列头部信息失败！", 1)
                 self.Debug(request['msg'], 1)
-                sys.exit()
+
         else:
             self.Debug("连接请求失败！请检查网络配置！", 2)
-            sys.exit()
 
     def getFetchLatestMessage(self):
         # 获取队列尾部消息后移除
+        """
+        获取队列尾部消息后移除
+
+        需要进行实例化后调用！！！
+
+        :return: 输出文字序列（以实际情况为准）
+        """
         params = {
             "sessionKey": self.session,
             "count": self.count
@@ -187,13 +219,19 @@ class Message(setup):
             else:
                 self.Debug("获取队列尾部信息失败！", 1)
                 self.Debug(request['msg'], 1)
-                sys.exit()
+
         else:
             self.Debug("连接请求失败！请检查网络配置！", 2)
-            sys.exit()
 
     def getPeekMessage(self):
         # 获取队列头部消息后不移除
+        """
+        获取队列头部消息后不移除
+
+        需要进行实例化后调用！！！
+
+        :return: 输出文字序列（以实际情况为准）
+        """
         params = {
             "sessionKey": self.session,
             "count": self.count
@@ -211,13 +249,19 @@ class Message(setup):
             else:
                 self.Debug("获取队列头部信息失败！", 1)
                 self.Debug(request['msg'], 1)
-                sys.exit()
+
         else:
             self.Debug("连接请求失败！请检查网络配置！", 2)
-            sys.exit()
 
     def getPeekLatestMessage(self) -> str:
         # 获取队列尾部消息后不移除
+        """
+        获取队列尾部消息后不移除
+
+        需要进行实例化后调用！！！
+
+        :return: 输出文字序列（以实际情况为准）
+        """
         params = {
             "sessionKey": self.session,
             "count": self.count
@@ -235,27 +279,42 @@ class Message(setup):
             else:
                 self.Debug("获取队列尾部信息失败！", 1)
                 self.Debug(request['msg'], 1)
-                sys.exit()
+
         else:
             self.Debug("连接请求失败！请检查网络配置！", 2)
-            sys.exit()
 
 
 class formatMessage(Message):
     # 信息格式化处理类(实际生产项目不建议使用)
     def getFetchMessageFormat(self):
+        """
+        格式化信息不建议使用
+        :return:
+        """
         message = self.getFetchMessage()
         return self.Format(message)
 
     def getFetchLatestMessageFormat(self):
+        """
+        格式化信息不建议使用
+        :return:
+        """
         message = self.getFetchLatestMessage()
         return self.Format(message)
 
     def getPeekMessageFormat(self):
+        """
+        格式化信息不建议使用
+        :return:
+        """
         message = self.getPeekMessage()
         return self.Format(message)
 
     def getPeekLatestMessageFormat(self):
+        """
+        格式化信息不建议使用
+        :return:
+        """
         message = self.getPeekLatestMessage()
         return self.Format(message)
 
@@ -334,6 +393,10 @@ class bot(formatMessage):
     # Bot信息获取类
     def getFriendList(self):
         # 获取Bot好友列表
+        """
+        获取Bot已经添加的好友列表
+        :return:{'code': 0, 'msg': '', 'data': [{'id': XXXX, 'nickname': 'XXXX', 'remark': 'XXXX'}]}
+        """
         params = {
             "sessionKey": self.session
         }
@@ -350,13 +413,17 @@ class bot(formatMessage):
             else:
                 self.Debug("获取Bot好友列表失败！", 1)
                 self.Debug(request['msg'], 1)
-                sys.exit()
+
         else:
             self.Debug("连接请求失败！请检查网络配置！", 2)
-            sys.exit()
 
     def getMemberList(self, target: str):
         # 获取Bot加入群的群成员列表
+        """
+        获取Bot加入群的群成员列表
+        :param target: 需要查询的群号
+        :return:{'code': 0, 'msg': '', 'data': [XXXX]}
+        """
         params = {
             "sessionKey": self.session,
             "target": target
@@ -374,13 +441,16 @@ class bot(formatMessage):
             else:
                 self.Debug("获取群成员列表失败！", 1)
                 self.Debug(request['msg'], 1)
-                sys.exit()
+
         else:
             self.Debug("连接请求失败！请检查网络配置！", 2)
-            sys.exit()
 
     def getGroupList(self):
         # 获取Bot加入的群列表
+        """
+        获取Bot已经加入的群列表
+        :return:{'code': 0, 'msg': '', 'data': [{'id': XXXX, 'name': 'XXXX', 'permission': 'XXXX'}]}
+        """
         params = {
             "sessionKey": self.session,
         }
@@ -397,26 +467,28 @@ class bot(formatMessage):
             else:
                 self.Debug("获取群成员列表失败！", 1)
                 self.Debug(request['msg'], 1)
-                sys.exit()
+
         else:
             self.Debug("连接请求失败！请检查网络配置！", 2)
-            sys.exit()
 
     def botProfile(self):
         # 获取Bot机器人账号信息
+        """
+        获取Bot账号信息
+        :return:{'nickname': 'XXXX', 'email': 'XXXX', 'age': XXXX, 'level': XXX, 'sign': 'XXXX', 'sex': 'XXXX'}
+        """
         headers = {
             'Connection': 'close'
         }
-        request = requests.get(url=self.host + ":" + self.port + "/botProfile", headers=headers)
+        params = {
+            "sessionKey": self.session
+        }
+        request = requests.get(url=self.host + ":" + self.port + "/botProfile", params=params, headers=headers)
         if request.status_code == 200:
             request = json.loads(request.text)
-            if request['code'] == 0:
-                self.Debug(request, 5)
-                self.Debug("Bot信息获取成功！", 0)
-                return request
-            else:
-                self.Debug("Bot信息获取失败！", 1)
-                self.Debug(request['msg'], 1)
+            self.Debug(request, 5)
+            self.Debug("Bot信息获取成功！", 0)
+            return request
         else:
             self.Debug("连接请求失败！请检查网络配置！", 2)
 
@@ -426,15 +498,21 @@ class bot(formatMessage):
 
 class friend(bot):
     # 好友相关操作类
-    def sendFriendMessage(self, msg: dict, tar) -> str:
+    def sendFriendMessage(self, msg: dict, tar: str):
         # 发送好友消息
+        """
+        发送好友普通消息
+        :param msg: 消息字典
+        :param tar: 消息发送的目标
+        :return:{'code': 0, 'msg': 'success', 'messageId': XXXX}
+        """
         headers = {
             'Connection': 'close'
         }
         if len(msg) >= 0:
-            massage = json.dumps(msg)
-            massage = '{"sessionKey":"' + self.session + '","target":' + tar + ',"messageChain":[' + massage + ']}'
-            request = requests.post(url=self.host + ":" + self.port + "/sendFriendMessage", data=str(massage),
+            message = json.dumps(msg)
+            message = '{"sessionKey":"' + self.session + '","target":' + tar + ',"messageChain":[' + message + ']}'
+            request = requests.post(url=self.host + ":" + self.port + "/sendFriendMessage", data=str(message),
                                     headers=headers)
             if request.status_code == 200:
                 request = json.loads(request.text)
@@ -445,13 +523,17 @@ class friend(bot):
                 else:
                     self.Debug("发送好友信息失败！", 1)
                     self.Debug(request['msg'], 1)
-                    sys.exit()
+
             else:
                 self.Debug("连接请求失败！请检查网络配置！", 2)
-                sys.exit()
 
     def getUserProfile(self, target: str):
         # 获取好友/任意用户信息
+        """
+        获取好友已经公开的信息
+        :param target: 获取对象ID号
+        :return: 依据实际情况返回参数
+        """
         params = {
             "sessionKey": self.session,
             "target": target,
@@ -469,18 +551,17 @@ class friend(bot):
             else:
                 self.Debug("好友资料失败！", 1)
                 self.Debug(request['msg'], 1)
-                sys.exit()
+
         else:
             self.Debug("连接请求失败！请检查网络配置！", 2)
-            sys.exit()
 
     def deleteFriend(self, tar):
         # 删除好友
         headers = {
             'Connection': 'close'
         }
-        massage = '{"sessionKey":"' + self.session + '","target":' + tar + '}"'
-        request = requests.post(url=self.host + ":" + self.port + "/deleteFriend", data=str(massage),
+        message = '{"sessionKey":"' + self.session + '","target":' + tar + '}"'
+        request = requests.post(url=self.host + ":" + self.port + "/deleteFriend", data=str(message),
                                 headers=headers)
         if request.status_code == 200:
             request = json.loads(request.text)
@@ -491,23 +572,27 @@ class friend(bot):
             else:
                 self.Debug("好友删除失败！", 1)
                 self.Debug(request['msg'], 1)
-            sys.exit()
         else:
             self.Debug("连接请求失败！请检查网络配置！", 2)
-            sys.exit()
 
 
 class group(friend):
     # 群相关操作类
     def sendGroupMessage(self, msg: dict, tar):
         # 发送群消息
+        """
+        发送群普通消息
+        :param msg: 消息字典
+        :param tar: 消息发送的目标
+        :return:{'code': 0, 'msg': 'success', 'messageId': XXXX}
+        """
         headers = {
             'Connection': 'close'
         }
         if len(msg) >= 0:
-            massage = json.dumps(msg)
-            massage = '{"sessionKey":"' + self.session + '","target":' + tar + ',"messageChain":[' + massage + ']}'
-            request = requests.post(url=self.host + ":" + self.port + "/sendGroupMessage", data=str(massage),
+            message = json.dumps(msg)
+            message = '{"sessionKey":"' + self.session + '","target":' + tar + ',"messageChain":[' + message + ']}'
+            request = requests.post(url=self.host + ":" + self.port + "/sendGroupMessage", data=str(message),
                                     headers=headers)
             if request.status_code == 200:
                 request = json.loads(request.text)
@@ -518,20 +603,26 @@ class group(friend):
                 else:
                     self.Debug("发送群信息失败！", 1)
                     self.Debug(request['msg'], 1)
-                    sys.exit()
+
             else:
                 self.Debug("连接请求失败！请检查网络配置！", 2)
-                sys.exit()
 
-    def sendTempMessage(self, msg: dict, tar):
+    def sendTempMessage(self, msg: dict, tar: str, qid: str):
         # 发送群临时消息
+        """
+        发送群临时消息
+        :param msg: 消息字典
+        :param tar: 临时信息发送的目标群
+        :param qid: 临时信息发送的目标
+        :return: {'code': 0, 'msg': 'success', 'messageId': XXXX}
+        """
         headers = {
             'Connection': 'close'
         }
         if len(msg) >= 0:
-            massage = json.dumps(msg)
-            massage = '{"sessionKey":"' + self.session + '","target":' + tar + ',"messageChain":[' + massage + ']}'
-            request = requests.post(url=self.host + ":" + self.port + "/sendTempMessage", data=str(massage),
+            message = json.dumps(msg)
+            message = '{"sessionKey":"' + self.session + '","qq":' + qid + ',"group":' + tar + ',"messageChain":[' + message + ']}'
+            request = requests.post(url=self.host + ":" + self.port + "/sendTempMessage", data=str(message),
                                     headers=headers)
             if request.status_code == 200:
                 request = json.loads(request.text)
@@ -542,13 +633,18 @@ class group(friend):
                 else:
                     self.Debug("发送群临时信息失败！", 1)
                     self.Debug(request['msg'], 1)
-                    sys.exit()
+
             else:
                 self.Debug("连接请求失败！请检查网络配置！", 2)
-                sys.exit()
 
     def getMemberProfile(self, target: str, memberId: str):
         # 获取群员信息
+        """
+        获取指定群员消息
+        :param target: 目标群
+        :param memberId: 目标群成员
+        :return:{'nickname': 'XXXX', 'email': 'XXXX', 'age': XXXX, 'level': XXXX, 'sign': 'XXXX', 'sex': 'XXXX'}
+        """
         params = {
             "sessionKey": self.session,
             "target": target,
@@ -560,20 +656,21 @@ class group(friend):
         request = requests.get(url=self.host + ":" + self.port + "/memberProfile", headers=headers, params=params)
         if request.status_code == 200:
             request = json.loads(request.text)
-            if request['code'] == 0:
-                self.Debug(request, 5)
-                self.Debug("群成员资料成功！", 0)
-                return request
-            else:
-                self.Debug("群成员资料失败！", 1)
-                self.Debug(request['msg'], 1)
-                sys.exit()
+            self.Debug(request, 5)
+            self.Debug("群成员资料成功！", 0)
+            return request
         else:
             self.Debug("连接请求失败！请检查网络配置！", 2)
-            sys.exit()
 
     def muteMember(self, target: str, memberId: str, times: str):
         # 禁言群成员
+        """
+        禁言制定群成员（需要相关群权限）
+        :param target: 目标群
+        :param memberId: 目标群成员
+        :param times: 禁言时间（以秒为单位，最高30天）
+        :return:{'code': 0, 'msg': 'success'}
+        """
         headers = {
             'Connection': 'close'
         }
@@ -590,13 +687,18 @@ class group(friend):
             else:
                 self.Debug("群成员禁言失败！", 1)
                 self.Debug(request['msg'], 1)
-                sys.exit()
+
         else:
             self.Debug("连接请求失败！请检查网络配置！", 2)
-            sys.exit()
 
     def unMuteMember(self, target: str, memberId: str):
         # 解除群成员禁言
+        """
+        解除目标群员禁言（需要相关群权限）
+        :param target: 目标群
+        :param memberId: 目标群成员
+        :return:{'code': 0, 'msg': 'success'}
+        """
         headers = {
             'Connection': 'close'
         }
@@ -613,36 +715,47 @@ class group(friend):
             else:
                 self.Debug("群成员禁言解除失败！", 1)
                 self.Debug(request['msg'], 1)
-                sys.exit()
+
         else:
             self.Debug("连接请求失败！请检查网络配置！", 2)
-            sys.exit()
 
     def kick(self, target: str, memberId: str, msg: str):
         # 移除群成员
+        """
+        移除目标群员（需要相关群权限）
+        :param msg: 移出群的提示信息
+        :param target: 目标群
+        :param memberId: 目标群成员
+        :return:{'code': 0, 'msg': 'success'}
+        """
         headers = {
             'Connection': 'close'
         }
         me = memberId
         tar = target
+        msg = msg.encode("utf-8").decode("latin1")
         data = '{"sessionKey":"' + self.session + '","target":' + tar + ',"memberId":' + me + ',"msg":' + msg + '}'
         request = requests.post(url=self.host + ":" + self.port + "/kick", headers=headers, data=data)
         if request.status_code == 200:
             request = json.loads(request.text)
             if request['code'] == 0:
                 self.Debug(request, 5)
-                self.Debug("群成员资料成功！", 0)
+                self.Debug("群成员移除成功！", 0)
                 return request
             else:
-                self.Debug("群成员资料失败！", 1)
+                self.Debug("群成员移除失败！", 1)
                 self.Debug(request['msg'], 1)
-                sys.exit()
+
         else:
             self.Debug("连接请求失败！请检查网络配置！", 2)
-            sys.exit()
 
     def quitGroup(self, target: str):
         # 退出指定群聊
+        """
+        Bot退出制定群聊
+        :param target: 目标群聊
+        :return: {'code': 0, 'msg': 'success'}
+        """
         headers = {
             'Connection': 'close'
         }
@@ -658,13 +771,17 @@ class group(friend):
             else:
                 self.Debug("退出群聊失败！", 1)
                 self.Debug(request['msg'], 1)
-                sys.exit()
+
         else:
             self.Debug("连接请求失败！请检查网络配置！", 2)
-            sys.exit()
 
     def muteAll(self, target: str):
         # 禁言指定群聊全体成员
+        """
+        禁言指定群聊全体成员
+        :param target: 目标群聊
+        :return: {'code': 0, 'msg': 'success'}
+        """
         headers = {
             'Connection': 'close'
         }
@@ -675,18 +792,22 @@ class group(friend):
             request = json.loads(request.text)
             if request['code'] == 0:
                 self.Debug(request, 5)
-                self.Debug("退出群聊成功！", 0)
+                self.Debug("禁言全体群聊成员成功！", 0)
                 return request
             else:
-                self.Debug("退出群聊失败！", 1)
+                self.Debug("禁言全体群聊成员失败！", 1)
                 self.Debug(request['msg'], 1)
-                sys.exit()
+
         else:
             self.Debug("连接请求失败！请检查网络配置！", 2)
-            sys.exit()
 
     def unMuteAll(self, target: str):
         # 解除指定群聊全体成员禁言
+        """
+        解除禁言指定群聊全体成员
+        :param target: 目标群聊
+        :return: {'code': 0, 'msg': 'success'}
+        """
         headers = {
             'Connection': 'close'
         }
@@ -697,15 +818,14 @@ class group(friend):
             request = json.loads(request.text)
             if request['code'] == 0:
                 self.Debug(request, 5)
-                self.Debug("退出群聊成功！", 0)
+                self.Debug("解除禁言全体群聊成员成功！", 0)
                 return request
             else:
-                self.Debug("退出群聊失败！", 1)
+                self.Debug("解除禁言全体群聊成员失败！", 1)
                 self.Debug(request['msg'], 1)
-                sys.exit()
+
         else:
             self.Debug("连接请求失败！请检查网络配置！", 2)
-            sys.exit()
 
 
 class other(group):
@@ -715,8 +835,8 @@ class other(group):
         headers = {
             'Connection': 'close'
         }
-        massage = '{"sessionKey":"' + self.session + '","target":' + tar + ',"subject":' + sub + ',"kind":' + ki + '}"'
-        request = requests.post(url=self.host + ":" + self.port + "/sendNudge", data=str(massage),
+        message = '{"sessionKey":"' + self.session + '","target":' + tar + ',"subject":' + sub + ',"kind":' + ki + '}"'
+        request = requests.post(url=self.host + ":" + self.port + "/sendNudge", data=str(message),
                                 headers=headers)
         if request.status_code == 200:
             request = json.loads(request.text)
@@ -727,18 +847,16 @@ class other(group):
             else:
                 self.Debug("发送戳一戳信息失败！", 1)
                 self.Debug(request['msg'], 1)
-            sys.exit()
         else:
             self.Debug("连接请求失败！请检查网络配置！", 2)
-            sys.exit()
 
     def reCall(self, tar):
         # 撤回消息
         headers = {
             'Connection': 'close'
         }
-        massage = '{"sessionKey":"' + self.session + '","target":' + tar + '}"'
-        request = requests.post(url=self.host + ":" + self.port + "/reCall", data=str(massage),
+        message = '{"sessionKey":"' + self.session + '","target":' + tar + '}"'
+        request = requests.post(url=self.host + ":" + self.port + "/reCall", data=str(message),
                                 headers=headers)
         if request.status_code == 200:
             request = json.loads(request.text)
@@ -749,24 +867,28 @@ class other(group):
             else:
                 self.Debug("信息撤回失败！", 1)
                 self.Debug(request['msg'], 1)
-            sys.exit()
         else:
             self.Debug("连接请求失败！请检查网络配置！", 2)
-            sys.exit()
 
 
 class file(other):
     # 文件操作类
     def uploadImage(self, types: str, files: str):
         # 上传图片文件
+        """
+        上传图片文件
+        :param types: 上传后发送的目标
+        :param files: 文件地址（实例化Mirai的地址）
+        :return:
+        """
         headers = {
             'Connection': 'close'
         }
-        massage = {"sessionKey": self.session, "type": types}
-        onFiles = {'img': ('send.png', open(files, 'rb'), 'image/png', {})}
+        message = {"sessionKey": self.session, "type": types}
+        onfiles = {'img': ('send.png', open(files, 'rb'), 'image/png', {})}
         request = requests.request(method="POST",
-                                   url=self.host + ":" + self.port + "/uploadImage", data=massage,
-                                   headers=headers, files=onFiles)
+                                   url=self.host + ":" + self.port + "/uploadImage", data=message,
+                                   headers=headers, files=onfiles)
         if request.status_code == 200:
             request = json.loads(request.text)
             self.Debug(request, 5)
@@ -778,16 +900,19 @@ class file(other):
                 return request
         else:
             self.Debug("连接请求失败！请检查网络配置！", 2)
-            sys.exit()
 
     def uploadVoice(self, files: str):
         # 上传音频文件(暂无法使用ing)
-        massage = {"sessionKey": self.session, "type": "group"}
+        """
+        暂停使用！
+        :param files:
+        :return:
+        """
+        message = {"sessionKey": self.session, "type": "group"}
         onFiles = {'voice': (files.split('/')[len(str(files).split('/')) - 1], open(files, 'rb'),
                              f"voice/{files.split('.')[len(str(files).split('.')) - 1]}", {})}
         request = requests.request(method="POST",
-                                   url=self.host + ":" + self.port + "/uploadVoice", data=massage
-                                   , files=onFiles)
+                                   url=self.host + ":" + self.port + "/uploadVoice", data=message, files=onFiles)
         if request.status_code == 200:
             request = json.loads(request.text)
             self.Debug(request, 5)
@@ -799,13 +924,16 @@ class file(other):
             return request
         else:
             self.Debug("连接请求失败！请检查网络配置！", 2)
-            sys.exit()
 
 
 class Mirai(file):
     # 框架相关操作类
     def version(self) -> dict:
         # 获取插件版本号
+        """
+        获取mirai-http-api插件版本号
+        :return: {'version': 'XX.XX.XX'}
+        """
         headers = {
             'Connection': 'close'
         }
