@@ -4,7 +4,7 @@
 一个是开发QBot更加简单的集成模块！
 author: HexMikuMax & ExMikuPro
 data: 2022/06/11
-version: Beta 1.4
+version: Beta 1.5
 """
 
 import json
