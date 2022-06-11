@@ -21,7 +21,7 @@ class Init:
         self.port = port
         self.key = key
         self.qid = qid
-        self.count = count
+        self.__count = count
         self.session = ""
         self.debug: bool = debug
         self.times: int = times
@@ -59,7 +59,7 @@ class setup(Init):
         self.Debug("初始化成功！", 0)
         return "Bot:" + self.qid + " 初始化成功！"
 
-    def getSession(self) -> str:
+    def getSession(self):
         # 获取session状态码
         """
         获取session码
@@ -557,10 +557,15 @@ class friend(bot):
 
     def deleteFriend(self, tar):
         # 删除好友
+        """
+        删除Bot已添加的好友
+        :param tar: 好友Qid
+        :return:
+        """
         headers = {
             'Connection': 'close'
         }
-        message = '{"sessionKey":"' + self.session + '","target":' + tar + '}"'
+        message = '{"sessionKey":"' + self.session + '","target":"' + tar + '"}'
         request = requests.post(url=self.host + ":" + self.port + "/deleteFriend", data=str(message),
                                 headers=headers)
         if request.status_code == 200:
