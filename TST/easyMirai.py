@@ -21,7 +21,7 @@ class Init:
         self.port = port
         self.key = key
         self.qid = qid
-        self.__count = count
+        self.count = count
         self.session = ""
         self.debug: bool = debug
         self.times: int = times
