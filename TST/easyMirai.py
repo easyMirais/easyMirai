@@ -3,8 +3,8 @@
 """
 一个是开发QBot更加简单的集成模块！
 author: HexMikuMax & ExMikuPro
-data: 2022/05/31
-version: Beta 1.3
+data: 2022/06/11
+version: Beta 1.4
 """
 
 import json
@@ -832,12 +832,20 @@ class other(group):
     # 其他操作类
     def sendNudge(self, sub: str, tar: str, ki: str):
         # 发送戳一戳消息
+        """
+        发送戳一戳消息
+        :param sub:戳一戳的目标, QQ号,可以为BotQQ号
+        :param tar:戳一戳接受的目标可以为群号/好友QQ号
+        :param ki:发送的对象类型(Friend, Group, Stranger)
+        :return: {'code': 0, 'msg': 'success'}
+        """
         headers = {
             'Connection': 'close'
         }
-        message = '{"sessionKey":"' + self.session + '","target":' + tar + ',"subject":' + sub + ',"kind":' + ki + '}"'
+        message = '{"sessionKey": "' + self.session + '", "target": "' + tar + '", "subject": "' + sub + '", "kind": "' + ki + '"}'
         request = requests.post(url=self.host + ":" + self.port + "/sendNudge", data=str(message),
                                 headers=headers)
+        print(request.text)
         if request.status_code == 200:
             request = json.loads(request.text)
             if request['code'] == 0:
@@ -850,13 +858,18 @@ class other(group):
         else:
             self.Debug("连接请求失败！请检查网络配置！", 2)
 
-    def reCall(self, tar):
+    def reCall(self, tar: str):
         # 撤回消息
+        """
+        撤回消息
+        :param tar: 消息ID，即发送消息后返回的messageId
+        :return: {'code': 0, 'msg': 'success'}
+        """
         headers = {
             'Connection': 'close'
         }
-        message = '{"sessionKey":"' + self.session + '","target":' + tar + '}"'
-        request = requests.post(url=self.host + ":" + self.port + "/reCall", data=str(message),
+        message = '{"sessionKey": "' + self.session + '", "target": "' + tar + '"}'
+        request = requests.post(url=self.host + ":" + self.port + "/recall", data=str(message),
                                 headers=headers)
         if request.status_code == 200:
             request = json.loads(request.text)
