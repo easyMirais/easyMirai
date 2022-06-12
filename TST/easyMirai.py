@@ -922,13 +922,14 @@ class file(other):
     def uploadVoice(self, files: str):
         # 上传音频文件(暂无法使用ing)
         """
-        暂停使用！
+        上传音频文件（当前仅支持上传群语音文件）
         :param files:
         :return:
         """
         message = {"sessionKey": self.session, "type": "group"}
-        onFiles = {'voice': (files.split('/')[len(str(files).split('/')) - 1], open(files, 'rb'),
-                             f"voice/{files.split('.')[len(str(files).split('.')) - 1]}", {})}
+        # onFiles = {'voice': (files.split('/')[len(str(files).split('/')) - 1], open(files, 'rb'),f"voice/{files.split('.')[len(str(files).split('.')) - 1]}", {})}
+        onFiles = {'voice': ('send.silk', open(files, "rb"))}
+        print(onFiles)
         request = requests.request(method="POST",
                                    url=self.host + ":" + self.port + "/uploadVoice", data=message, files=onFiles)
         if request.status_code == 200:
