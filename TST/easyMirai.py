@@ -3,8 +3,8 @@
 """
 一个是开发QBot更加简单的集成模块！
 author: HexMikuMax & ExMikuPro
-data: 2022/06/11
-version: Beta 1.5
+data: 2022/06/12
+version: Beta 1.51
 """
 
 import json
@@ -757,7 +757,7 @@ class group(friend):
     def quitGroup(self, target: str):
         # 退出指定群聊
         """
-        Bot退出制定群聊
+        Bot退出指定群聊
         :param target: 目标群聊
         :return: {'code': 0, 'msg': 'success'}
         """
@@ -829,6 +829,106 @@ class group(friend):
                 self.Debug("解除禁言全体群聊成员失败！", 1)
                 self.Debug(request['msg'], 1)
 
+        else:
+            self.Debug("连接请求失败！请检查网络配置！", 2)
+
+    def setEssence(self, target: str):
+        # 设置群精华消息
+        """
+        设置群精华消息
+        :param target: 目标消息ID
+        :return:{'code': 0, 'msg': 'success'}
+        """
+        headers = {
+            'Connection': 'close'
+        }
+        data = '{"sessionKey":"' + self.session + '","target":' + target + '}'
+        request = requests.post(url=self.host + ":" + self.port + "/setEssence", headers=headers, data=data)
+        if request.status_code == 200:
+            request = json.loads(request.text)
+            if request['code'] == 0:
+                self.Debug(request, 5)
+                self.Debug("设置群聊精华消息成功！", 0)
+                return request
+            else:
+                self.Debug("设置群聊精华消息失败！", 1)
+                self.Debug(request['msg'], 1)
+
+        else:
+            self.Debug("连接请求失败！请检查网络配置！", 2)
+
+    def getGroupConfig(self, target: str):
+        # 获取群设置
+        """
+        获取群聊设置
+        :param target: 目标群聊
+        :return:{'name': 'XXXX', 'confessTalk': XXXX, 'allowMemberInvite': XXXX, 'autoApprove': XXXX, 'anonymousChat': XXXX}
+        """
+        headers = {
+            'Connection': 'close'
+        }
+        params = {
+            "sessionKey": self.session,
+            "target": target
+        }
+        request = requests.get(url=self.host + ":" + self.port + "/groupConfig", headers=headers, params=params)
+        print(request.text)
+        if request.status_code == 200:
+            request = json.loads(request.text)
+            if 'code' not in request:
+                self.Debug(request, 5)
+                self.Debug("获取群聊配置成功！", 0)
+                return request
+            else:
+                self.Debug("获取群聊设置失败！", 1)
+                self.Debug(request['msg'], 1)
+
+        else:
+            self.Debug("连接请求失败！请检查网络配置！", 2)
+
+    def editGroupConfig(self, target: str, name: str = "", announcement: str = "", confessTalk: bool = None,
+                        allowMemberInvit: bool = None, autoApprove: bool = None, anonymousChat: bool = None):
+        # 修改群设置(需要相关管理权限)
+        """
+        修改群聊设置
+        :param target: 目标群聊
+        :param name: 群名称(可选)
+        :param announcement:群公告(可选)
+        :param confessTalk:是否开启坦白说(可选)
+        :param allowMemberInvit:是否允许群员邀请(可选)
+        :param autoApprove:是否开启自动审批入群(可选)
+        :param anonymousChat:是否允许匿名聊天(可选)
+        :return:{"code":0,"msg":"success}
+        """
+        headers = {
+            'Connection': 'close'
+        }
+        config: dict = {}
+        print(len(name))
+        if len(name) > 0:
+            config["name"] = name
+        if len(announcement) > 0:
+            config["announcement"] = announcement
+        if confessTalk is not None:
+            config["confessTalk"] = confessTalk
+        if allowMemberInvit is not None:
+            config["allowMemberInvit"] = allowMemberInvit
+        if autoApprove is not None:
+            config["autoApprove"] = autoApprove
+        if anonymousChat is not None:
+            config["anonymousChat"] = anonymousChat
+        data = '{"sessionKey":"' + self.session + '","target":' + target + ',"config":' + str(config) + '}'
+        request = requests.post(url=self.host + ":" + self.port + "/groupConfig", headers=headers,
+                                data=data.encode("utf-8"))
+        if request.status_code == 200:
+            request = json.loads(request.text)
+            if request['code'] == 0:
+                self.Debug(request, 5)
+                self.Debug("修改群聊设置成功！", 0)
+                return request
+            else:
+                self.Debug("设置群聊设置失败！", 1)
+                self.Debug(request['msg'], 1)
         else:
             self.Debug("连接请求失败！请检查网络配置！", 2)
 
