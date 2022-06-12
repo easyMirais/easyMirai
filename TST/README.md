@@ -1,14 +1,12 @@
-##测试版更新日志
+#测试版更新日志
 
-###easyMirai Beta 1.51
+##easyMirai Beta 1.51
 
 >添加获取群设置信息，修改群设置信息，修复语音文件上传问题
 > 
 > 修改文档错误
 
-###easyMirai Beta 1.5
-
-主要变更
+##easyMirai Beta 1.5
 
 >修改了Debug函数显示方式
 > 
