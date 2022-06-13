@@ -3,8 +3,8 @@
 """
 一个是开发QBot更加简单的集成模块！
 author: HexMikuMax & ExMikuPro
-data: 2022/06/12
-version: Beta 1.51
+data: 2022/06/13
+version: Beta 1.52
 """
 
 import json
@@ -16,7 +16,17 @@ from rich.console import Console
 
 class Init:
     # 初始化参数类
-    def __init__(self, host: str, port: str, key: str, qid: str, count: str = "1", debug: bool = False, times: int = 1):
+    def __init__(self, host: str, port: str, key: str, qid: str, count: str = "1", debug: int = 0, times: int = 1):
+        """
+        初始化配置
+        :param host: Bot Http地址
+        :param port: Bot Http端口
+        :param key: Bot 认证Key
+        :param qid: Bot 已登陆的QQ号
+        :param count: 消息单次获取长度(可选)
+        :param debug: 控制台调试输出错误等级(可选:0=None，1=Notice,2=Warning,3=Error)
+        :param times: 延迟时间秒(可选)
+        """
         self.host = host
         self.port = port
         self.key = key
@@ -35,13 +45,13 @@ class Init:
         :param code: 错误等级
         :return: None
         """
-        if self.debug:
+        if self.debug != 0:
             c = Console()  # 初始化debug控制台输出模块
-            if code == 0:
+            if code == 0 and self.debug == 1:
                 c.log("[Notice]：", msg, style="#a4ff8f")
-            elif code == 1:
+            elif code == 1 and self.debug == 2:
                 c.log("[Warning]：", msg, style="#f6ff8f")
-            elif code == 2:
+            elif code == 2 and self.debug == 3:
                 c.log("[Error]：", msg, style="#ff8f8f")
 
 
@@ -931,6 +941,102 @@ class group(friend):
                 self.Debug(request['msg'], 1)
         else:
             self.Debug("连接请求失败！请检查网络配置！", 2)
+
+    def getMemberInfo(self, target: str, memberId: str):
+        # 获取群员设置
+        """
+        获取群员设置
+        :param target: 目标群聊
+        :param memberId: 目标群员
+        :return: 根据实际情况决定
+        """
+        headers = {
+            'Connection': 'close'
+        }
+        params = {
+            "sessionKey": self.session,
+            "target": target,
+            "memberId": memberId,
+        }
+        request = requests.get(url=self.host + ":" + self.port + "/memberInfo", headers=headers, params=params)
+        print(request.text)
+        if request.status_code == 200:
+            request = json.loads(request.text)
+            if 'code' not in request:
+                self.Debug(request, 5)
+                self.Debug("获取群员配置成功！", 0)
+                return request
+            else:
+                self.Debug("获取群员设置失败！", 1)
+                self.Debug(request['msg'], 1)
+
+        else:
+            self.Debug("连接请求失败！请检查网络配置！", 2)
+
+    def editMemberInfo(self, target: str, memberId: str, name: str, specialTitle: str):
+        # 修改群成员设置
+        """
+        修改群成员设置
+        :param target: 目标群聊
+        :param memberId: 目标成员
+        :param name: 目标成员新的名称(可选)
+        :param specialTitle: 目标成员新的群头衔(可选)
+        :return: {"code":0,"msg":"success"}
+        """
+        headers = {
+            'Connection': 'close'
+        }
+        config: dict = {}
+        print(len(name))
+        if len(name) > 0:
+            config["name"] = name
+        if len(specialTitle) > 0:
+            config["specialTitle"] = specialTitle
+        data = '{"sessionKey": "' + self.session + '","target": "' + target + '","memberId": "' + memberId + '","info": {' + str(
+            config) + '}}'
+        request = requests.post(url=self.host + ":" + self.port + "/groupConfig", headers=headers,
+                                data=data.encode("utf-8"))
+        if request.status_code == 200:
+            request = json.loads(request.text)
+            if request['code'] == 0:
+                self.Debug(request, 5)
+                self.Debug("修改群聊设置成功！", 0)
+                return request
+            else:
+                self.Debug("设置群聊设置失败！", 1)
+                self.Debug(request['msg'], 1)
+        else:
+            self.Debug("连接请求失败！请检查网络配置！", 2)
+
+    def editAdmin(self, target: str, memberId: str, assign: bool):
+        # 修改群管理员设置(群主权限)
+        """
+        修改群管理员设置(群主权限)
+        :param target: 目标群聊
+        :param memberId: 目标群成员
+        :param assign: 是否设为管理员
+        :return: {"code":0,"msg":"success"}
+        """
+        headers = {
+            'Connection': 'close'
+        }
+
+        data = '{"sessionKey": "' + self.session + '","target": "' + target + '","memberId": "' + memberId + '","assign": "' + str(
+            assign) + '"}'
+        request = requests.post(url=self.host + ":" + self.port + "/memberAdmin", headers=headers,
+                                data=data.encode("utf-8"))
+        if request.status_code == 200:
+            request = json.loads(request.text)
+            if request['code'] == 0:
+                self.Debug(request, 5)
+                self.Debug("修改群管理员设置成功！", 0)
+                return request
+            else:
+                self.Debug("设置群管理员设置失败！", 1)
+                self.Debug(request['msg'], 1)
+        else:
+            self.Debug("连接请求失败！请检查网络配置！", 2)
+        pass
 
 
 class other(group):
