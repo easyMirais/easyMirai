@@ -27,13 +27,13 @@ class Init:
         :param debug: 控制台调试输出错误等级(可选:0=None，1=Notice,2=Warning,3=Error)
         :param times: 延迟时间秒(可选)
         """
-        self.host = host
-        self.port = port
-        self.key = key
-        self.qid = qid
-        self.count = count
-        self.session = ""
-        self.debug: bool = debug
+        self.host: str = host
+        self.port: str = port
+        self.key: str = key
+        self.qid: str = qid
+        self.count: str = count
+        self.session: str = ""
+        self.debug: int = debug
         self.times: int = times
 
     def Debug(self, msg, code: int):
