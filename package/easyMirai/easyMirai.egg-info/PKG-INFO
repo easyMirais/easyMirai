@@ -1,3 +1,12 @@
+Metadata-Version: 2.1
+Name: easyMirai
+Version: 1.0.39
+Summary: 帮助QBot开发新手者快速构建简单的QQ机器人
+Home-page: https://github.com/ExMikuPro/easyMirai
+Author: HexMikuMax
+Author-email: sfnco-miku@outlook.com
+Description-Content-Type: text/markdown
+
 # easyMirai
 
 ![](./Docs/assets/image/title.png)
@@ -22,7 +31,6 @@
 这是一个简单的调用例子，实现了复读机的功能
 
 ```python
-
 from easyMirai import http as em
 
 if __name__ == '__main__':
