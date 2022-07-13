@@ -4,7 +4,7 @@
 一个是开发QBot更加简单的集成模块！
 author: HexMikuMax & ExMikuPro
 data: 2022/06/13
-version: Beta 1.52
+version: Beta 1.5.3
 """
 
 import json
@@ -49,9 +49,9 @@ class Init:
             c = Console()  # 初始化debug控制台输出模块
             if code == 0 and self.debug == 1:
                 c.log("[Notice]：", msg, style="#a4ff8f")
-            elif code == 1 and self.debug == 2:
+            elif code == 1 and self.debug == 2 and self.debug == 1:
                 c.log("[Warning]：", msg, style="#f6ff8f")
-            elif code == 2 and self.debug == 3:
+            elif code == 2 and self.debug == 3 and self.debug == 2 and self.debug == 1:
                 c.log("[Error]：", msg, style="#ff8f8f")
 
 
@@ -1147,6 +1147,29 @@ class file(other):
             else:
                 self.Debug("语音上传成功！", 0)
             return request
+        else:
+            self.Debug("连接请求失败！请检查网络配置！", 2)
+
+    def uploadFile(self, target: str, files: str, path: str = ""):
+        # 上传文件类(目前仅支持上传群文件)
+        headers = {
+            'Connection': 'close'
+        }
+        message = {"sessionKey": self.session, "type": "group", "target": target, "path": path}
+        onfiles = {'file': (open(files, 'rb'))}
+        request = requests.request(method="POST",
+                                   url=self.host + ":" + self.port + "/file/upload", data=message,
+                                   headers=headers, files=onfiles)
+        print(request.text)
+        if request.status_code == 200:
+            request = json.loads(request.text)
+            self.Debug(request, 5)
+            if 'code' in request:
+                self.Debug("文件上传失败！", 0)
+                return request["msg"]
+            else:
+                self.Debug("文件上传成功！", 0)
+                return request
         else:
             self.Debug("连接请求失败！请检查网络配置！", 2)
 
