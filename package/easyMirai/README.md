@@ -6,6 +6,8 @@
 
 **注意**本项目基于**开源软件** [Mirai](https://github.com/mamoe/mirai) 进行二次开发
 
+**本项目地址：** [easyMirai](https://github.com/ExMikuPro/easyMirai/)
+
 [![](https://img.shields.io/badge/blog-@Sfnco-ff69b4.svg)](https://sfnco.com.cn)
 ![](https://img.shields.io/github/size/ExMikuPro/easyMirai/TST/easyMirai.py)
 
@@ -21,10 +23,10 @@
 
 ```python
 
-from package import easyMirai
+from package.easyMirai import http as em
 
 if __name__ == '__main__':
-    mirai = easyMirai.Mirai("YouHost", "YouPort", "YouKey", "YouQid")
+    mirai = em.Mirai("YouHost", "YouPort", "YouKey", "YouQid")
     print(mirai.begin())
     while True:
         mirai.delay()
@@ -41,10 +43,6 @@ if __name__ == '__main__':
 **[⬆ back to top](#目录)**
 
 ## 调用
-
-```shell
-
-```
 
 关于调用问题一定要**实例化**后进行对于数据的操作！
 
@@ -68,7 +66,6 @@ if message == "text":
 
 **本项目使用AGPLv3**
 
-TST里存放着历代测试Alpha版本，即最原始版本(不建议使用)
 
 此项目创建于**2022.05.15**，如果出现开发程序上的各种问题欢迎在**issues**发布！
 
