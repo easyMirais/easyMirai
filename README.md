@@ -43,7 +43,7 @@ if __name__ == '__main__':
 ## 调用
 
 ```shell
-
+pip3 install easyMirai
 ```
 
 关于调用问题一定要**实例化**后进行对于数据的操作！
