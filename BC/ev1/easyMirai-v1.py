@@ -13,7 +13,7 @@ import time
 import requests
 from rich.console import Console
 
-
+9
 class Init:
     # 初始化参数类
     def __init__(self, host: str, port: str, key: str, qid: str, count: str = "1", debug: int = 0, times: int = 1):
