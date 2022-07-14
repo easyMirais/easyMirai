@@ -21,10 +21,10 @@
 
 ```python
 
-from package import easyMirai
+from easyMirai import http
 
 if __name__ == '__main__':
-    mirai = easyMirai.Mirai("YouHost", "YouPort", "YouKey", "YouQid")
+    mirai = http.Mirai("YouHost", "YouPort", "YouKey", "YouQid")
     print(mirai.begin())
     while True:
         mirai.delay()
