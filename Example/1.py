@@ -1,6 +1,6 @@
 import time
 
-import easyMirai
+from package import easyMirai
 
 if __name__ == '__main__':
     # 初始化->绑定QID->注销Session->运行结束
