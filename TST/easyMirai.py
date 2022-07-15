@@ -19,6 +19,7 @@ class Init:
     def __init__(self, host: str, port: str, key: str, qid: str, count: str = "1", debug: int = 0, times: int = 1):
         """
         初始化配置
+
         :param host: Bot Http地址
         :param port: Bot Http端口
         :param key: Bot 认证Key
