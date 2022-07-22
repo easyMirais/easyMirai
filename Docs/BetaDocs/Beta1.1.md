@@ -64,7 +64,7 @@ easyMirai需要调用requests库进行数据的获取
 
 ```python
 
-from package import easyMirai
+from Package import easyMirai
 ```
 
 实例化函数输入
