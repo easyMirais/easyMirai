@@ -78,7 +78,7 @@ pip3 install easyMirai==1.0.39
 
 ```python
 
-from Package.easyMirai import http
+from Package.easyMirai import em
 ```
 
 实例化函数输入
