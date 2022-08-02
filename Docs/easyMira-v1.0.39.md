@@ -4,12 +4,12 @@
 
 使用须知：本项目基于 [Mirai](`https://github.com/mamoe/mirai`) 进行二次开发
 
-此文档为 **easyMirai 1.0.39 正式版** 的文档文件，请及时 [Click here](https://github.com/ExMikuPro/easyMirai) 检查更新！
+此文档为 **easyMirai 1.\* 正式版** 的文档文件，请及时 [Click here](https://github.com/ExMikuPro/easyMirai) 检查更新！
 
 本项目已上传至**PyPI**进行版本托管，执行如下指令安装当前文档对应的软件包！
 
 ```shell
-pip3 install easyMirai==1.0.39
+pip3 install easyMirai
 ```
 
 #### 注意
