@@ -34,9 +34,10 @@ class Init:
         self.count: str = count
         self.session: str = ""
         self.debug: int = debug
-        self._times: int = times
+        self.times_: int = times
         self.version: str = "1.0.39"
         self.c = Console()  # 初始化debug控制台输出模块
+        self.begin()
 
     def Debug(self, msg, code: int):
         # 输出控制台
@@ -52,12 +53,8 @@ class Init:
                 self.c.log("[Notice]：", msg, style="#a4ff8f")
             elif code == 1 and self.debug == 2 and self.debug == 1:
                 self.c.log("[Warning]：", msg, style="#f6ff8f")
-            elif code == 2 and self.debug == 3 and self.debug == 2 and self.debug == 1:
+            elif code == 2 and self.debug == 3 or self.debug == 2 or self.debug == 1:
                 self.c.log("[Error]：", msg, style="#ff8f8f")
-
-
-class setup(Init):
-    # Bot初始化类
 
     def begin(self) -> str:
         # 初始化机器人
@@ -118,6 +115,10 @@ class setup(Init):
 
         else:
             self.Debug("连接请求失败！请检查网络配置！", 2)
+
+
+class setup(Init):
+    # Bot初始化类
 
     def releaseSession(self):
         # 释放session到QQBot
@@ -504,7 +505,7 @@ class bot(formatMessage):
             self.Debug("连接请求失败！请检查网络配置！", 2)
 
     def delay(self):
-        time.sleep(self.times)
+        time.sleep(self.times_)
 
 
 class friend(bot):
