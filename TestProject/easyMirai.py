@@ -1176,17 +1176,7 @@ class file(other):
             self.Debug("连接请求失败！请检查网络配置！", 2)
 
 
-class Format(file):
-
-    def Test(self):
-        return "Hex NB!"
-
-    @property
-    def Formats(self):
-        return "just do do..."
-
-
-class Mirai(Format):
+class Mirai(file):
     # 框架相关操作类
     def version(self) -> dict:
         # 获取插件版本号
