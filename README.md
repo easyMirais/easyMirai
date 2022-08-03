@@ -25,7 +25,6 @@ from easyMirai import easyMirai as em
 
 if __name__ == '__main__':
     mirai = em.Mirai("YouHost", "YouPort", "YouKey", "YouQid")
-    print(mirai.begin())
     while True:
         mirai.delay()
         if mirai.getCountMessage()['data'] != 0:
