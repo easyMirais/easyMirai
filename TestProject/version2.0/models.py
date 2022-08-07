@@ -37,6 +37,9 @@ class targetMode:
     def group(self, target: int):
         return groupTypeMode(session=self._session, target=target, url=self._url)
 
+    def temp(self, gid: int):
+        return tempTypeMode(session=self._session, gid=gid, url=self._url)
+
     def nudge(self, target: int):
         return expand.expandNudge(self._url, self._session, target)
 
@@ -286,7 +289,8 @@ class groupTypeMode:
             data = json.loads(data.text)
 
             if data["code"] == 0:
-                self._c.log("[Notice]：AtAll发送成功", "详细：" + str(self._target) + "(Group) <- 'at " + str(self._target) + "'",
+                self._c.log("[Notice]：AtAll发送成功",
+                            "详细：" + str(self._target) + "(Group) <- 'at " + str(self._target) + "'",
                             style="#a4ff8f")
             else:
                 self._c.log("[Error]：AtAll发送失败", style="#ff8f8f")
@@ -305,7 +309,7 @@ class groupTypeMode:
             data = json.loads(data.text)
             if data["code"] == 0:
                 self._c.log("[Notice]：文本发送成功",
-                           "详细：" + str(self._target) + "(Group " + str(self._target) + ") <- '" + str(context) + "'",
+                            "详细：" + str(self._target) + "(Group " + str(self._target) + ") <- '" + str(context) + "'",
                             style="#a4ff8f")
             else:
                 self._c.log("[Error]：文本发送失败", style="#ff8f8f")
@@ -337,7 +341,7 @@ class groupTypeMode:
             data = json.loads(data.text)
         if data["code"] == 0:
             self._c.log("[Notice]：图片发送成功",
-                       "详细：" + str(self._target) + "(Group " + str(self._target) + ") <- '" + str(path) + "'",
+                        "详细：" + str(self._target) + "(Group " + str(self._target) + ") <- '" + str(path) + "'",
                         style="#a4ff8f")
         else:
             self._c.log("[Error]：图片发送失败", style="#ff8f8f")
@@ -360,7 +364,7 @@ class groupTypeMode:
             data = json.loads(data.text)
             if data["code"] == 0:
                 self._c.log("[Notice]：表情发送成功",
-                           "详细：" + str(self._target) + "(Group " + str(self._target) + ") <- '" + str(faceId) + "'",
+                            "详细：" + str(self._target) + "(Group " + str(self._target) + ") <- '" + str(faceId) + "'",
                             style="#a4ff8f")
             else:
                 self._c.log("[Error]：表情发送失败", style="#ff8f8f")
@@ -387,7 +391,7 @@ class groupTypeMode:
             data = json.loads(data.text)
         if data["code"] == 0:
             self._c.log("[Notice]：语音发送成功",
-                       "详细：" + str(self._target) + "(Group " + str(self._target) + ") <- '" + str(voiceId) + "'",
+                        "详细：" + str(self._target) + "(Group " + str(self._target) + ") <- '" + str(voiceId) + "'",
                         style="#a4ff8f")
         else:
             self._c.log("[Error]：语音发送失败", style="#ff8f8f")
@@ -412,7 +416,7 @@ class groupTypeMode:
             data = json.loads(data.text)
             if data["code"] == 0:
                 self._c.log("[Notice]：骰子发送成功",
-                           "详细：" + str(self._target) + "(Group " + str(self._target) + ") <- '" + str(value) + "'",
+                            "详细：" + str(self._target) + "(Group " + str(self._target) + ") <- '" + str(value) + "'",
                             style="#a4ff8f")
             else:
                 self._c.log("[Error]：骰子发送失败", style="#ff8f8f")
@@ -434,7 +438,7 @@ class groupTypeMode:
             data = json.loads(data.text)
             if data["code"] == 0:
                 self._c.log("[Notice]：APP卡片发送成功",
-                           "详细：" + str(self._target) + "(Group " + str(self._target) + ") <- 'APP卡片'",
+                            "详细：" + str(self._target) + "(Group " + str(self._target) + ") <- 'APP卡片'",
                             style="#a4ff8f")
             else:
                 self._c.log("[Error]：APP卡片发送失败", style="#ff8f8f")
@@ -453,15 +457,15 @@ class groupTypeMode:
 
 
 class tempTypeMode:
-    def __init__(self, target):
-        self._target = target
+    def __init__(self, session: str, url: str, gid: int):
+        self._url = url
+        self._session = session
+        self._c = Console()
+        self._gid = gid
 
-    # 发送群消息类型
-    def text(self):
-        print("send group type is at message")
-        print("我at了 " + self._target)
-
-        return echoTypeMode("send group type is at message")
+    # 发送群临时消息类型
+    def to(self, target: int):
+        return expand.expandTemp(self._url, self._session, target, self._gid)
 
 
 class uploadMode:

@@ -43,17 +43,17 @@ class Init:
             request = req.get(url=self._url + _config["about"], timeout=5)
         except Exception as re:
             request = ""
-            self._c.log("[Alert]：地址或端口有误，详细：查询不到Mirai服务器", style="#fb48a0")
+            self._c.log("[Alert]：地址或端口有误，详细：未查询到Mirai HTTP服务器", style="#fb48a0")
             exit()
         if request.status_code == 200:
             data = json.loads(request.text)
             if data["code"] == 0:
                 version = data["data"]["version"]
-                self._c.log("[Notice]：当前Mirai-HTTP-API版本为 " + version + " ，详细: 已查询到Mirai服务器", style="#a4ff8f")
+                self._c.log("[Notice]：当前Mirai-HTTP-API版本为 " + version + " ，详细: 已查询到Mirai HTTP服务器", style="#a4ff8f")
 
     def _createPool(self, maxWork: int):
         pool = ThreadPoolExecutor(maxWork)
-        self._c.log("[Notice]：成功创建容量为" + str(maxWork) + "的线程池", style="#a4ff8f")
+        self._c.log("[Notice]：成功创建容量为 " + str(maxWork) + " 的线程池", style="#a4ff8f")
         return pool
 
     def _beginSession(self):
