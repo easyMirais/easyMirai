@@ -1,7 +1,7 @@
 import easyMirai
 
 if __name__ == '__main__':
-    m = easyMirai.Mirai("http://127.0.0.1", "8080", "INITKEYxWntQVgk", "2865521610", debug=3)
+    m = easyMirai.Mirai("http://127.0.0.1", "8080", "INITKEYxWntQVgk", "2508417507", debug=3)
     # m.version()
     # m.getSession()
     # m.bindSession()
@@ -24,7 +24,7 @@ if __name__ == '__main__':
     # m.kick("862453481", "377694143", "你被移除啦～")
     # m.muteAll("862453481")
     # m.unMuteAll("862453481")
-    # print(m.sendNudge("3177045556", "3177045556", "Friend"))
+    print(m.sendNudge("3177045556", "3177045556", "Friend"))
     # print(m.reCall(str(ids)))
     # print(m.uploadImage("Group", "./8CCD5AA34CF0EC837F64B1857121B58F.png"))
     # print(m.deleteFriend("3177045556"))

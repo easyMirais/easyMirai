@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
 import json
+import re
 
 import requests as po
+import expand
 
-try:
-    from rich.console import Console
-
-    rh: bool = True
-except ImportError as ip:
-    rh: bool = False
+from rich.console import Console
 
 _config = {
     "send": {
@@ -28,67 +25,83 @@ _config = {
 class targetMode:
     # 发送者目标
     def __init__(self, session, uri):
-        self.session = session
-        self.url = uri
+        self._session = session
+        self._url = uri
 
     def __repr__(self):
-        return "请选择一个发送模式"
+        return "请选择一个信息执行模式"
 
     def friend(self, target: int):
-        return friendTypeMode(session=self.session, url=self.url, target=target)
+        return friendTypeMode(session=self._session, url=self._url, target=target)
 
     def group(self, target: int):
-        return groupTypeMode(session=self.session, target=target, url=self.url)
+        return groupTypeMode(session=self._session, target=target, url=self._url)
+
+    def nudge(self, target: int):
+        return expand.expandNudge(self._url, self._session, target)
 
 
 class friendTypeMode:
     # 好友发送消息类型
     def __init__(self, session, url: str, target: int):
-        self.session = session
-        self.url = url
-        self.target = target
-        self.c = Console()
+        self._session = session
+        self._url = url
+        self._target = target
+        self._c = Console()
 
-    def text(self, context: str = " "):
+    def plain(self, context: str = " "):
         data = {
-            "sessionKey": self.session,
-            "target": self.target,
+            "sessionKey": self._session,
+            "target": self._target,
             "messageChain": [
                 {"type": "Plain", "text": context},
             ]
         }
-        data = po.post(self.url + _config["send"]["friend"]["sendFriendMessage"], data=json.dumps(data))
+        data = po.post(self._url + _config["send"]["friend"]["sendFriendMessage"], data=json.dumps(data))
         if data.status_code == 200:
             data = json.loads(data.text)
             if data["code"] == 0:
-                self.c.log("[Notice]：文本发送成功", "详细：" + str(self.target) + "(Friend) <- '" + str(context) + "'",
-                           style="#a4ff8f")
+                self._c.log("[Notice]：文本发送成功", "详细：" + str(self._target) + "(Friend) <- '" + str(context) + "'",
+                            style="#a4ff8f")
             else:
-                self.c.log("[Error]：文本发送失败", style="#ff8f8f")
+                self._c.log("[Error]：文本发送失败", style="#ff8f8f")
         return echoTypeMode(data)
 
-    def image(self, url: str = " "):
-        data = {
-            "sessionKey": self.session,
-            "target": self.target,
-            "messageChain": [
-                {"type": "Image", "url": url},
-            ]
-        }
-        data = po.post(self.url + _config["send"]["friend"]["sendFriendMessage"], data=json.dumps(data))
+    def image(self, path: str):
+        rec = re.compile(r'[a-zA-z]+://[^\s]*')
+        if re.search(rec, path):
+            data = {
+                "sessionKey": self._session,
+                "target": self._target,
+                "messageChain": [
+                    {"type": "Image", "url": path},
+                ]
+            }
+        else:
+            data = {
+                "sessionKey": self._session,
+                "target": self._target,
+                "messageChain": [
+                    {
+                        "type": "Image",
+                        "url": _uploadImage(path, self._session, "friend", self._url)
+                    }
+                ]
+            }
+        data = po.post(self._url + _config["send"]["friend"]["sendFriendMessage"], data=json.dumps(data))
         if data.status_code == 200:
             data = json.loads(data.text)
-            if data["code"] == 0:
-                self.c.log("[Notice]：图片发送成功", "详细：" + str(self.target) + "(Friend) <- '" + str(url) + "'",
-                           style="#a4ff8f")
-            else:
-                self.c.log("[Error]：图片发送失败", style="#ff8f8f")
+        if data["code"] == 0:
+            self._c.log("[Notice]：图片发送成功", "详细：" + str(self._target) + "(Friend) <- '" + str(path) + "'",
+                        style="#a4ff8f")
+        else:
+            self._c.log("[Error]：图片发送失败", style="#ff8f8f")
         return echoTypeMode(data)
 
     def face(self, faceId: int, name: str = ""):
         data = {
-            "sessionKey": self.session,
-            "target": self.target,
+            "sessionKey": self._session,
+            "target": self._target,
             "messageChain": [
                 {
                     "type": "Face",
@@ -97,20 +110,20 @@ class friendTypeMode:
                 }
             ]
         }
-        data = po.post(self.url + _config["send"]["friend"]["sendFriendMessage"], data=json.dumps(data))
+        data = po.post(self._url + _config["send"]["friend"]["sendFriendMessage"], data=json.dumps(data))
         if data.status_code == 200:
             data = json.loads(data.text)
             if data["code"] == 0:
-                self.c.log("[Notice]：表情发送成功", "详细：" + str(self.target) + "(Friend) <- '" + str(faceId) + "'",
-                           style="#a4ff8f")
+                self._c.log("[Notice]：表情发送成功", "详细：" + str(self._target) + "(Friend) <- '" + str(faceId) + "'",
+                            style="#a4ff8f")
             else:
-                self.c.log("[Error]：表情发送失败", style="#ff8f8f")
+                self._c.log("[Error]：表情发送失败", style="#ff8f8f")
         return echoTypeMode(data)
 
     def voice(self, voiceId: str = "", url: str = "", length: int = 1024):
         data = {
-            "sessionKey": self.session,
-            "target": self.target,
+            "sessionKey": self._session,
+            "target": self._target,
             "messageChain": [
                 {
                     "type": "Voice",
@@ -123,42 +136,24 @@ class friendTypeMode:
             ]
         }
 
-        data = po.post(self.url + _config["send"]["friend"]["sendFriendMessage"], data=json.dumps(data))
+        data = po.post(self._url + _config["send"]["friend"]["sendFriendMessage"], data=json.dumps(data))
         if data.status_code == 200:
             data = json.loads(data.text)
         if data["code"] == 0:
-            self.c.log("[Notice]：语音发送成功", "详细：" + str(self.target) + "(Friend) <- '" + str(voiceId) + "'",
-                       style="#a4ff8f")
+            self._c.log("[Notice]：语音发送成功", "详细：" + str(self._target) + "(Friend) <- '" + str(voiceId) + "'",
+                        style="#a4ff8f")
         else:
-            self.c.log("[Error]：语音发送失败", style="#ff8f8f")
-        return echoTypeMode(data)
-
-    def other(self, data: dict):
-        data = {
-            "sessionKey": self.session,
-            "target": self.target,
-            "messageChain": [
-                data
-            ]
-        }
-        data = po.post(self.url + _config["send"]["friend"]["sendFriendMessage"], data=json.dumps(data))
-        if data.status_code == 200:
-            data = json.loads(data.text)
-            if data["code"] == 0:
-                self.c.log("[Notice]：信息发送成功", "详细：" + str(self.target) + "(Friend) <- '未知'",
-                           style="#a4ff8f")
-            else:
-                self.c.log("[Error]：信息发送失败", style="#ff8f8f")
+            self._c.log("[Error]：语音发送失败", style="#ff8f8f")
         return echoTypeMode(data)
 
     @property
     def poke(self):
-        return expandPoke(self.url, self.session, self.target)
+        return expand.expandPoke(self._url, self._session, self._target)
 
     def dice(self, value: int = 1):
         data = {
-            "sessionKey": self.session,
-            "target": self.target,
+            "sessionKey": self._session,
+            "target": self._target,
             "messageChain": [
                 {
                     "type": "Dice",
@@ -166,20 +161,21 @@ class friendTypeMode:
                 }
             ]
         }
-        data = po.post(self.url + _config["send"]["friend"]["sendFriendMessage"], data=json.dumps(data))
+        data = po.post(self._url + _config["send"]["friend"]["sendFriendMessage"], data=json.dumps(data))
         if data.status_code == 200:
             data = json.loads(data.text)
             if data["code"] == 0:
-                self.c.log("[Notice]：骰子发送成功", "详细：" + str(self.target) + "(Friend) <- '未知'",
-                           style="#a4ff8f")
+                self._c.log("[Notice]：骰子发送成功", "详细：" + str(self._target) + "(Friend) <- '未知'",
+                            style="#a4ff8f")
             else:
-                self.c.log("[Error]：骰子发送失败", style="#ff8f8f")
+                self._c.log("[Error]：骰子发送失败", style="#ff8f8f")
         return echoTypeMode(data)
 
     def musicShare(self, value: int = 1):
+        # 待解决
         data = {
-            "sessionKey": self.session,
-            "target": self.target,
+            "sessionKey": self._session,
+            "target": self._target,
             "messageChain": [
                 {
                     "type": "MusicShare",
@@ -193,20 +189,20 @@ class friendTypeMode:
                 }
             ]
         }
-        data = po.post(self.url + _config["send"]["friend"]["sendFriendMessage"], data=json.dumps(data))
+        data = po.post(self._url + _config["send"]["friend"]["sendFriendMessage"], data=json.dumps(data))
         if data.status_code == 200:
             data = json.loads(data.text)
             if data["code"] == 0:
-                self.c.log("[Notice]：骰子发送成功", "详细：" + str(self.target) + "(Friend) <- '未知'",
-                           style="#a4ff8f")
+                self._c.log("[Notice]：骰子发送成功", "详细：" + str(self._target) + "(Friend) <- '未知'",
+                            style="#a4ff8f")
             else:
-                self.c.log("[Error]：骰子发送失败", style="#ff8f8f")
+                self._c.log("[Error]：骰子发送失败", style="#ff8f8f")
         return echoTypeMode(data)
 
     def app(self, content: str):
         data = {
-            "sessionKey": self.session,
-            "target": self.target,
+            "sessionKey": self._session,
+            "target": self._target,
             "messageChain": [
                 {
                     "type": "App",
@@ -214,82 +210,47 @@ class friendTypeMode:
                 }
             ]
         }
-        data = po.post(self.url + _config["send"]["friend"]["sendFriendMessage"], data=json.dumps(data))
+        data = po.post(self._url + _config["send"]["friend"]["sendFriendMessage"], data=json.dumps(data))
         if data.status_code == 200:
             data = json.loads(data.text)
             if data["code"] == 0:
-                self.c.log("[Notice]：APP卡片发送成功", "详细：" + str(self.target) + "(Friend) <- 'APP卡片'",
-                           style="#a4ff8f")
+                self._c.log("[Notice]：APP卡片发送成功", "详细：" + str(self._target) + "(Friend) <- 'APP卡片'",
+                            style="#a4ff8f")
             else:
-                self.c.log("[Error]：APP卡片发送失败", style="#ff8f8f")
+                self._c.log("[Error]：APP卡片发送失败", style="#ff8f8f")
         return echoTypeMode(data)
 
-
-class expandPoke:
-    def __init__(self, url, session, target):
-        self.url = url
-        self.session = session
-        self.target = target
-        self.c = Console()
-
-    def _context(self, name: str, to: str):
+    def other(self, data: dict):
         data = {
-            "sessionKey": self.session,
-            "target": self.target,
+            "sessionKey": self._session,
+            "target": self._target,
             "messageChain": [
-                {
-                    "type": "Poke",
-                    "name": name
-                }
+                data
             ]
         }
-        data = po.post(self.url + _config["send"]["friend"][to], data=json.dumps(data))
+        data = po.post(self._url + _config["send"]["friend"]["sendFriendMessage"], data=json.dumps(data))
         if data.status_code == 200:
             data = json.loads(data.text)
             if data["code"] == 0:
-                self.c.log("[Notice]：戳一戳发送成功", "详细：" + str(self.target) + "(Friend) <- '" + name + "'",
-                           style="#a4ff8f")
+                self._c.log("[Notice]：信息发送成功", "详细：" + str(self._target) + "(Friend) <- '未知'",
+                            style="#a4ff8f")
             else:
-                self.c.log("[Error]：戳一戳发送失败", style="#ff8f8f")
+                self._c.log("[Error]：信息发送失败", style="#ff8f8f")
         return echoTypeMode(data)
-
-    @property
-    def poke(self):
-        return self._context("poke", "sendFriendMessage")
-
-    @property
-    def showLove(self):
-        return self._context("ShowLove", "sendFriendMessage")
-
-    @property
-    def like(self):
-        return self._context("Like", "sendFriendMessage")
-
-    @property
-    def heartbroken(self):
-        return self._context("Heartbroken", "sendFriendMessage")
-
-    @property
-    def SixSixSix(self):
-        return self._context("Heartbroken", "sendFriendMessage")
-
-    @property
-    def FangDaZhao(self):
-        return self._context("FangDaZhao", "sendFriendMessage")
 
 
 class groupTypeMode:
     def __init__(self, session: str, url: str, target: int):
-        self.url = url
-        self.session = session
-        self.c = Console()
-        self.target = target
+        self._url = url
+        self._session = session
+        self._c = Console()
+        self._target = target
 
     # 发送群消息类型
     def at(self, target: int, display: str = ""):
         data = {
-            "sessionKey": self.session,
-            "target": self.target,
+            "sessionKey": self._session,
+            "target": self._target,
             "messageChain": [
                 {
                     "type": "At",
@@ -298,75 +259,222 @@ class groupTypeMode:
                 }
             ]
         }
-        data = po.post(self.url + _config["send"]["group"]["sendGroupMessage"], data=json.dumps(data))
+        data = po.post(self._url + _config["send"]["group"]["sendGroupMessage"], data=json.dumps(data))
         if data.status_code == 200:
             data = json.loads(data.text)
 
             if data["code"] == 0:
-                self.c.log("[Notice]：At发送成功", "详细：" + str(self.target) + "(Group) <- 'at " + str(target) + "'",
-                           style="#a4ff8f")
+                self._c.log("[Notice]：At发送成功", "详细：" + str(self._target) + "(Group) <- 'at " + str(target) + "'",
+                            style="#a4ff8f")
             else:
-                self.c.log("[Error]：At发送失败", style="#ff8f8f")
+                self._c.log("[Error]：At发送失败", style="#ff8f8f")
         return echoTypeMode(data)
 
-    def text(self, context: str = " "):
+    @property
+    def atAll(self):
         data = {
-            "sessionKey": self.session,
-            "target": self.target,
+            "sessionKey": self._session,
+            "target": self._target,
+            "messageChain": [
+                {
+                    "type": "AtAll"
+                }
+            ]
+        }
+        data = po.post(self._url + _config["send"]["group"]["sendGroupMessage"], data=json.dumps(data))
+        if data.status_code == 200:
+            data = json.loads(data.text)
+
+            if data["code"] == 0:
+                self._c.log("[Notice]：AtAll发送成功", "详细：" + str(self._target) + "(Group) <- 'at " + str(self._target) + "'",
+                            style="#a4ff8f")
+            else:
+                self._c.log("[Error]：AtAll发送失败", style="#ff8f8f")
+        return echoTypeMode(data)
+
+    def plain(self, context: str):
+        data = {
+            "sessionKey": self._session,
+            "target": self._target,
             "messageChain": [
                 {"type": "Plain", "text": context},
             ]
         }
-        data = po.post(self.url + _config["send"]["group"]["sendGroupMessage"], data=json.dumps(data))
+        data = po.post(self._url + _config["send"]["group"]["sendGroupMessage"], data=json.dumps(data))
         if data.status_code == 200:
             data = json.loads(data.text)
             if data["code"] == 0:
-                self.c.log("[Notice]：文本发送成功", "详细：" + str(self.target) + "(Group) <- '" + str(context) + "'",
-                           style="#a4ff8f")
+                self._c.log("[Notice]：文本发送成功",
+                           "详细：" + str(self._target) + "(Group " + str(self._target) + ") <- '" + str(context) + "'",
+                            style="#a4ff8f")
             else:
-                self.c.log("[Error]：文本发送失败", style="#ff8f8f")
+                self._c.log("[Error]：文本发送失败", style="#ff8f8f")
         return echoTypeMode(data)
 
-    def image(self, url: str = " "):
+    def image(self, path: str):
+        rec = re.compile(r'[a-zA-z]+://[^\s]*')
+        if re.search(rec, path):
+            data = {
+                "sessionKey": self._session,
+                "target": self._target,
+                "messageChain": [
+                    {"type": "Image", "url": path},
+                ]
+            }
+        else:
+            data = {
+                "sessionKey": self._session,
+                "target": self._target,
+                "messageChain": [
+                    {
+                        "type": "Image",
+                        "url": _uploadImage(path, self._session, "group", self._url)
+                    }
+                ]
+            }
+        data = po.post(self._url + _config["send"]["group"]["sendGroupMessage"], data=json.dumps(data))
+        if data.status_code == 200:
+            data = json.loads(data.text)
+        if data["code"] == 0:
+            self._c.log("[Notice]：图片发送成功",
+                       "详细：" + str(self._target) + "(Group " + str(self._target) + ") <- '" + str(path) + "'",
+                        style="#a4ff8f")
+        else:
+            self._c.log("[Error]：图片发送失败", style="#ff8f8f")
+        return echoTypeMode(data)
+
+    def face(self, faceId: int, name: str = ""):
         data = {
-            "sessionKey": self.session,
-            "target": self.target,
+            "sessionKey": self._session,
+            "target": self._target,
             "messageChain": [
-                {"type": "Image", "url": url},
+                {
+                    "type": "Face",
+                    "faceId": faceId,
+                    "name": name
+                }
             ]
         }
-        data = po.post(self.url + _config["send"]["group"]["sendGroupMessage"], data=json.dumps(data))
+        data = po.post(self._url + _config["send"]["group"]["sendGroupMessage"], data=json.dumps(data))
         if data.status_code == 200:
             data = json.loads(data.text)
             if data["code"] == 0:
-                self.c.log("[Notice]：图片发送成功", "详细：" + str(self.target) + "(Group) <- '" + str(url) + "'",
-                           style="#a4ff8f")
+                self._c.log("[Notice]：表情发送成功",
+                           "详细：" + str(self._target) + "(Group " + str(self._target) + ") <- '" + str(faceId) + "'",
+                            style="#a4ff8f")
             else:
-                self.c.log("[Error]：图片发送失败", style="#ff8f8f")
+                self._c.log("[Error]：表情发送失败", style="#ff8f8f")
+        return echoTypeMode(data)
+
+    def voice(self, voiceId: str = "", url: str = "", length: int = 1024):
+        data = {
+            "sessionKey": self._session,
+            "target": self._target,
+            "messageChain": [
+                {
+                    "type": "Voice",
+                    "voiceId": voiceId,
+                    "url": url,
+                    "path": "null",
+                    "base64": "null",
+                    "length": length,
+                }
+            ]
+        }
+
+        data = po.post(self._url + _config["send"]["group"]["sendGroupMessage"], data=json.dumps(data))
+        if data.status_code == 200:
+            data = json.loads(data.text)
+        if data["code"] == 0:
+            self._c.log("[Notice]：语音发送成功",
+                       "详细：" + str(self._target) + "(Group " + str(self._target) + ") <- '" + str(voiceId) + "'",
+                        style="#a4ff8f")
+        else:
+            self._c.log("[Error]：语音发送失败", style="#ff8f8f")
+        return echoTypeMode(data)
+
+    def poke(self):
+        return expand.expandPoke(self._url, self._session, self._target)
+
+    def dice(self, value: int = 1):
+        data = {
+            "sessionKey": self._session,
+            "target": self._target,
+            "messageChain": [
+                {
+                    "type": "Dice",
+                    "value": value
+                }
+            ]
+        }
+        data = po.post(self._url + _config["send"]["group"]["sendGroupMessage"], data=json.dumps(data))
+        if data.status_code == 200:
+            data = json.loads(data.text)
+            if data["code"] == 0:
+                self._c.log("[Notice]：骰子发送成功",
+                           "详细：" + str(self._target) + "(Group " + str(self._target) + ") <- '" + str(value) + "'",
+                            style="#a4ff8f")
+            else:
+                self._c.log("[Error]：骰子发送失败", style="#ff8f8f")
+        return echoTypeMode(data)
+
+    def app(self, content: str):
+        data = {
+            "sessionKey": self._session,
+            "target": self._target,
+            "messageChain": [
+                {
+                    "type": "App",
+                    "content": content
+                }
+            ]
+        }
+        data = po.post(self._url + _config["send"]["group"]["sendGroupMessage"], data=json.dumps(data))
+        if data.status_code == 200:
+            data = json.loads(data.text)
+            if data["code"] == 0:
+                self._c.log("[Notice]：APP卡片发送成功",
+                           "详细：" + str(self._target) + "(Group " + str(self._target) + ") <- 'APP卡片'",
+                            style="#a4ff8f")
+            else:
+                self._c.log("[Error]：APP卡片发送失败", style="#ff8f8f")
         return echoTypeMode(data)
 
     def other(self, data: dict):
-        data = po.post(self.url + _config["send"]["group"]["sendGroupMessage"], data=json.dumps(data))
+        data = po.post(self._url + _config["send"]["group"]["sendGroupMessage"], data=json.dumps(data))
         if data.status_code == 200:
             data = json.loads(data.text)
             if data["code"] == 0:
-                self.c.log("[Notice]：信息发送成功", "详细：" + str(self.target) + "(Group) <- '未知'",
-                           style="#a4ff8f")
+                self._c.log("[Notice]：信息发送成功", "详细：" + str(self._target) + "(Group) <- '未知'",
+                            style="#a4ff8f")
             else:
-                self.c.log("[Error]：信息发送失败", style="#ff8f8f")
+                self._c.log("[Error]：信息发送失败", style="#ff8f8f")
         return echoTypeMode(data)
 
 
 class tempTypeMode:
     def __init__(self, target):
-        self.target = target
+        self._target = target
 
     # 发送群消息类型
     def text(self):
         print("send group type is at message")
-        print("我at了 " + self.target)
+        print("我at了 " + self._target)
 
         return echoTypeMode("send group type is at message")
+
+
+class uploadMode:
+    # 上传模式
+    def __init__(self, session, uri):
+        self._session = session
+        self._url = uri
+
+    def __repr__(self):
+        return "请选择上传模式"
+
+    def image(self, path: str):
+        return expand.expandUploadImage(self._url, self._session, path)
 
 
 class echoTypeMode:
@@ -375,17 +483,17 @@ class echoTypeMode:
     """
 
     def __init__(self, context):
-        self.context = context
+        self._context = context
 
     def __repr__(self):
-        return str(self.context)
+        return "<Request [200]>"
 
     @property
     def json(self) -> str:
         """
         格式化输出为json文本
         """
-        data = json.dumps(self.context)
+        data = json.dumps(self._context)
         return data
 
     @property
@@ -393,4 +501,16 @@ class echoTypeMode:
         """
         格式化输出为字典
         """
-        return self.context
+        return self._context
+
+
+def _uploadImage(path: str, session, name, url: str):
+    message = {"sessionKey": session, "type": name}
+    onfiles = {'img': ('send.png', open(path, 'rb'), 'image/png', {})}
+    data = po.request(method="POST", url=url + "/uploadImage", data=message, files=onfiles)
+    if data.status_code == 200:
+        data = json.loads(data.text)
+        if "code" not in data:
+            return data["url"]
+        else:
+            return "error"

@@ -1056,6 +1056,7 @@ class other(group):
             'Connection': 'close'
         }
         message = '{"sessionKey": "' + self.session + '", "target": "' + tar + '", "subject": "' + sub + '", "kind": "' + ki + '"}'
+        print(message)
         request = requests.post(url=self.host + ":" + self.port + "/sendNudge", data=str(message),
                                 headers=headers)
         print(request.text)
