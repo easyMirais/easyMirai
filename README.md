@@ -8,7 +8,7 @@
 
 目前**easyMirai**已经进入全新的**2.0**时代！！🥳
 
-> 注意⚠️：不与1.0版本相兼容 1.0版本将停留在**1.2.36 LTS**版本
+> 注意⚠️：不与1.0版本相兼容 1.0版本将停留在**1.2.36 LTS**版本 
 
 [![](https://img.shields.io/badge/blog-@Sfnco-ff69b4.svg?style=flat-square&)](https://sfnco.com.cn)
 ![](https://img.shields.io/github/size/easyMirais/easyMirai/README.md?style=flat-square&logo=appveyor)
