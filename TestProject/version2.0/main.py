@@ -1,7 +1,9 @@
+import time
+
 import method
 
 if __name__ == '__main__':
-    easyMirai = method.Mirai("http://127.0.0.1", "8080", "2894472041", "INITKEYxWntQVgk")
+    easyMirai = method.Mirai("http://127.0.0.1", "8080", "2508417507", "INITKEYxWntQVgk")
     # print(easyMirai.send.friend(3177045556).plain("你好哇哇哇哇哇～").json)
     # print(easyMirai.send.friend(3177045556).face(237).json)
     # print(easyMirai.send.friend(3177045556).image("./image.png").dictionary)
@@ -26,4 +28,16 @@ if __name__ == '__main__':
     # print(easyMirai.send.temp(862453481).to(3177045556).image("./image.png").dictionary)
     # print(easyMirai.send.temp(862453481).to(3177045556).face(237).dictionary)
 
+    # print(easyMirai.action.group(862453481).mute(2894472041).d(3).dictionary)
+    # print(easyMirai.action.group(862453481).unmute(2894472041).dictionary)
+    # print(easyMirai.action.group(862453481).muteAll.dictionary)
+    # print(easyMirai.action.group(862453481).unMuteAll.dictionary)
+
+    # print(easyMirai.action(862453481).group.kick(2181376101).dictionary)
+    # print(easyMirai.action(862453481).group.quit.dictionary)
+
+    # print(easyMirai.action.friend.deleteFriend(2894472041).dictionary)
+
     # print(easyMirai.upload.image("./image.png").friend.dictionary)
+
+    # print(easyMirai.event(129412).newFriend(2508417507).yes("添加好友啦啦啦啦啦～").dictionary)

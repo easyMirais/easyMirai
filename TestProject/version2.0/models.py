@@ -468,7 +468,7 @@ class tempTypeMode:
         return expand.expandTemp(self._url, self._session, target, self._gid)
 
 
-class uploadMode:
+class uploadTypeMode:
     # 上传模式
     def __init__(self, session, uri):
         self._session = session
@@ -479,6 +479,37 @@ class uploadMode:
 
     def image(self, path: str):
         return expand.expandUploadImage(self._url, self._session, path)
+
+
+class actionTypeMode:
+    # 操作模式
+    def __init__(self, session, uri):
+        self._session = session
+        self._url = uri
+
+    def __repr__(self):
+        return "请选择群操作模式"
+
+    def group(self, target: int):
+        return expand.expandActionGroup(self._url, self._session, target)
+
+    @property
+    def friend(self):
+        return expand.expandActionFriend(self._url, self._session)
+
+
+class eventTypeMode:
+    # 操作模式
+    def __init__(self, session, uri, eventId):
+        self._session = session
+        self._url = uri
+        self._eventId = eventId
+
+    def __repr__(self):
+        return "请选择事件处理类型"
+
+    def newFriend(self, target: int, groupId: int = 0):
+        return expand.expandEvent(self._url, self._session, target, self._eventId, groupId)
 
 
 class echoTypeMode:
