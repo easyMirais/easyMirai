@@ -40,4 +40,8 @@ if __name__ == '__main__':
 
     # print(easyMirai.upload.image("./image.png").friend.dictionary)
 
-    # print(easyMirai.event(129412).newFriend(2508417507).yes("添加好友啦啦啦啦啦～").dictionary)
+    # print(easyMirai.event(1659925849000000).newFriend(2508417507).yes("添加好友啦啦啦啦啦～").dictionary)
+    # print(easyMirai.event(123123123).newJoinGroup(377694143, 862453481).yes("欢迎加入群聊").dictionary)
+    # print(easyMirai.event(12345678).newBotJoinGroup(87654321, 2468, 27145).yes("接受邀请加入群聊").dictionary)
+
+    # print(easyMirai.get.info.dictionary)
