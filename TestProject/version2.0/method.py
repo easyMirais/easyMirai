@@ -104,6 +104,8 @@ class Mirai(Init):
     def event(self, eventId: int):
         return models.eventTypeMode(session=self._session, uri=str(self._url), eventId=eventId)
 
+    # todo 添加File操作类
+
 
 @atexit.register
 def _stop():

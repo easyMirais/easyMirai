@@ -1,13 +1,19 @@
 # easyMirai
 
-![](./Docs/assets/image/title.png)
+![](./Docs/assets/image/title-v2.png)
 
 *介绍本项目的注意事项&主体结构*
 
 **注意**本项目基于**开源软件** [Mirai](https://github.com/mamoe/mirai) 进行二次开发
 
-[![](https://img.shields.io/badge/blog-@Sfnco-ff69b4.svg)](https://sfnco.com.cn)
-![](https://img.shields.io/github/size/ExMikuPro/easyMirai/TST/easyMirai.py)
+目前**easyMirai**已经进入全新的**2.0**时代！！🥳
+
+> 注意⚠️：不与1.0版本相兼容 1.0版本将停留在**1.2.36 LTS**版本
+
+[![](https://img.shields.io/badge/blog-@Sfnco-ff69b4.svg?style=flat-square&)](https://sfnco.com.cn)
+![](https://img.shields.io/github/size/easyMirais/easyMirai/README.md?style=flat-square&logo=appveyor)
+![](https://img.shields.io/badge/Python-3.6+-73b1e2?style=flat-square&logo=appveyor)
+![](https://img.shields.io/badge/easyMirai-2.0-73d1a4?style=flat-square)
 
 ## 目录
 
@@ -17,23 +23,19 @@
 
 ## 案例
 
-这是一个简单的调用例子，实现了复读机的功能
+这是一个简单的调用例子，实现了发送普通文字的功能
 
 ```python
 
-from easyMirai import easyMirai as em
+import easyMirai
 
 if __name__ == '__main__':
-    mirai = em.Mirai("YouHost", "YouPort", "YouKey", "YouQid")
-    while True:
-        mirai.delay()
-        if mirai.getCountMessage()['data'] != 0:
-            message = mirai.getFetchLatestMessageFormat()
-            if message['From'] == "FriendMessage":
-                msg = {'type': 'Plain', "text": message['Plain'][0]}
-                mirai.sendFriendMessage(msg, message['Sender'])
+    mirai = easyMirai.Mirai("YouHost", "YouPort", "YouKey", "YouQid")
+    mirai.send.friend(12345678).plain("hello world!").dictionary
 
 ```
+
+> 很好理解吧....(大概)
 
 更多案例请查阅 **Example** 目录，我们将持续更新相关案例，以方便调用！
 
@@ -49,11 +51,12 @@ pip3 install easyMirai
 
 ```python
 # bad
-if mirai.getFetchLatestMessageFormat() == "text":
+
+if mirai.get.message.peek(1).dictionary == "text":
     ...
 
 # good
-message = mirai.getFetchLatestMessageFormat()
+message = mirai.get.message.peek(1).dictionary
 if message == "text":
     ...
 ```
@@ -63,9 +66,12 @@ if message == "text":
 ## 声明
 
 本项目基于**开源软件** [Mirai](`https://github.com/mamoe/mirai`) 进行二次开发
+
 > 不得扭曲或隐藏免费且开源的事实
 
 **本项目使用AGPLv3**
+
+> 关于文档👩‍💻&🧑‍💻正在抓紧完善，会尽快发布～
 
 TestProject里存放着历代测试开发版本，即最原始版本(不建议使用仅🉑️用来学习使用)
 
