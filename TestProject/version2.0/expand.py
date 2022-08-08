@@ -36,6 +36,21 @@ _config = {
     },
     "upload": {
         "uploadImage": "/uploadImage",
+    },
+    "get": {
+        "count": "/countMessage",
+        "fetchMessage": "/fetchMessage",
+        "fetchLatestMessage": "/fetchLatestMessage",
+        "peekMessage": "/peekMessage",
+        "peekLatestMessage": "/peekLatestMessage",
+        "messageFromId": "/messageFromId",
+        "friendList": "/friendList",
+        "groupList": "/groupList",
+        "memberList": "/memberList",
+        "friendProfile": "/friendProfile",
+        "botProfile": "/botProfile",
+        "memberProfile": "/memberProfile",
+        "userProfile": "/userProfile",
     }
 }
 
@@ -196,6 +211,155 @@ class expandTemp:
             else:
                 self._c.log("[Error]：表情发送失败", style="#ff8f8f")
         return models.echoTypeMode(data)
+
+
+class expandGetMessage:
+    def __init__(self, url, session):
+        self._url = url
+        self._session = session
+        self._c = Console()
+
+    def _request(self, message, to: str, params: dict):
+        data = po.get(self._url + str(_config["get"][to]), params=params)
+        if data.status_code == 200:
+            data = json.loads(data.text)
+            if data["code"] == 0:
+                self._c.log("[Notice]：获取成功",
+                            "详细：" + message + "(get) <- '获取信息'",
+                            style="#a4ff8f")
+            else:
+                self._c.log("[Error]：获取失败", style="#ff8f8f")
+        return models.echoTypeMode(data)
+
+    @property
+    def count(self):
+        data = {
+            "sessionKey": self._session
+        }
+        return self._request("count", "count", data)
+
+    def fetch(self, count: int):
+        data = {
+            "sessionKey": self._session,
+            "count": count
+        }
+        return self._request("fetchMessage", "fetchMessage", data)
+
+    def fetchLatest(self, count: int):
+        data = {
+            "sessionKey": self._session,
+            "count": count
+        }
+        return self._request("fetchLatestMessage", "fetchLatestMessage", data)
+
+    def peek(self, count: int):
+        data = {
+            "sessionKey": self._session,
+            "count": count
+        }
+        return self._request("peekMessage", "peekMessage", data)
+
+    def peekLatest(self, count: int):
+        data = {
+            "sessionKey": self._session,
+            "count": count
+        }
+        return self._request("peekLatestMessage", "peekLatestMessage", data)
+
+    def fromId(self, mid: int):
+        data = {
+            "sessionKey": self._session,
+            "id": mid
+        }
+        return self._request("messageFromId", "messageFromId", data)
+
+
+class expandGetList:
+    def __init__(self, url, session):
+        self._url = url
+        self._session = session
+        self._c = Console()
+
+    def _request(self, message, to: str, params: dict):
+        data = po.get(self._url + str(_config["get"][to]), params=params)
+        if data.status_code == 200:
+            data = json.loads(data.text)
+            if data["code"] == 0:
+                self._c.log("[Notice]：获取成功",
+                            "详细：" + message + "(get) <- '获取'",
+                            style="#a4ff8f")
+            else:
+                self._c.log("[Error]：获取失败", style="#ff8f8f")
+        return models.echoTypeMode(data)
+
+    @property
+    def friend(self):
+        data = {
+            "sessionKey": self._session
+        }
+        return self._request("friendList", "friendList", data)
+
+    @property
+    def group(self):
+        data = {
+            "sessionKey": self._session
+        }
+        return self._request("groupList", "groupList", data)
+
+    def member(self, target: int):
+        data = {
+            "sessionKey": self._session,
+            "target": target
+        }
+        return self._request("memberList", "memberList", data)
+
+
+class expandGetProFile:
+    def __init__(self, url, session):
+        self._url = url
+        self._session = session
+        self._c = Console()
+
+    def _request(self, message, to: str, params: dict):
+        data = po.get(self._url + str(_config["get"][to]), params=params)
+        if data.status_code == 200:
+            data = json.loads(data.text)
+            if "code" not in data:
+                self._c.log("[Notice]：获取成功",
+                            "详细：" + message + "(get) <- '获取资料页'",
+                            style="#a4ff8f")
+            else:
+                self._c.log("[Error]：获取失败", style="#ff8f8f")
+        return models.echoTypeMode(data)
+
+    @property
+    def bot(self):
+        data = {
+            "sessionKey": self._session
+        }
+        return self._request("botProfile", "botProfile", data)
+
+    def friend(self, target: int):
+        data = {
+            "sessionKey": self._session,
+            "target": target
+        }
+        return self._request("friendProfile", "friendProfile", data)
+
+    def member(self, gid: int, target: int):
+        data = {
+            "sessionKey": self._session,
+            "target": gid,
+            "memberId": target,
+        }
+        return self._request("memberProfile", "memberProfile", data)
+
+    def user(self, target: int):
+        data = {
+            "sessionKey": self._session,
+            "target": target,
+        }
+        return self._request("userProfile", "userProfile", data)
 
 
 class expandEventNewFriend:

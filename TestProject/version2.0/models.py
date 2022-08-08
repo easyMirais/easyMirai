@@ -17,7 +17,8 @@ _config = {
         },
         "temp": {
             "sendTempMessage": "/sendTempMessage"
-        }
+        },
+        "recall": "/recall"
     },
     "get": {
         "info": "/about"
@@ -30,6 +31,7 @@ class targetMode:
     def __init__(self, session, uri):
         self._session = session
         self._url = uri
+        self._c = Console()
 
     def __repr__(self):
         return "请选择一个信息执行模式"
@@ -45,6 +47,22 @@ class targetMode:
 
     def nudge(self, target: int):
         return expand.expandNudge(self._url, self._session, target)
+
+    def recall(self, target: int):
+        data = {
+            "sessionKey": self._session,
+            "target": target
+        }
+        data = po.post(self._url + str(_config["send"]["recall"]), data=json.dumps(data))
+        if data.status_code == 200:
+            data = json.loads(data.text)
+            if data["code"] == 0:
+                self._c.log("[Notice]：撤回成功",
+                            "详细：" + str(target) + "(get) <- '撤回'",
+                            style="#a4ff8f")
+            else:
+                self._c.log("[Error]：撤回失败", style="#ff8f8f")
+        return echoTypeMode(data)
 
 
 class friendTypeMode:
@@ -480,6 +498,18 @@ class getTypeMode:
     @property
     def info(self):
         return self._get("插件信息")
+
+    @property
+    def message(self):
+        return expand.expandGetMessage(self._url, self._session)
+
+    @property
+    def list(self):
+        return expand.expandGetList(self._url, self._session)
+
+    @property
+    def proFile(self):
+        return expand.expandGetProFile(self._url, self._session)
 
 
 class tempTypeMode:
