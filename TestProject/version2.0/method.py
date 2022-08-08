@@ -90,6 +90,10 @@ class Mirai(Init):
         return models.targetMode(session=self._session, uri=str(self._url))
 
     @property
+    def get(self):
+        return models.getTypeMode(session=self._session, uri=str(self._url))
+
+    @property
     def upload(self):
         return models.uploadTypeMode(session=self._session, uri=str(self._url))
 

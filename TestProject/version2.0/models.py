@@ -18,6 +18,9 @@ _config = {
         "temp": {
             "sendTempMessage": "/sendTempMessage"
         }
+    },
+    "get": {
+        "info": "/about"
     }
 }
 
@@ -456,6 +459,29 @@ class groupTypeMode:
         return echoTypeMode(data)
 
 
+class getTypeMode:
+    def __init__(self, session: str, uri: str):
+        self._url = uri
+        self._session = session
+        self._c = Console()
+
+    def _get(self, message: str):
+        data = po.get(self._url + str(_config["get"]["info"]))
+        if data.status_code == 200:
+            data = json.loads(data.text)
+            if data["code"] == 0:
+                self._c.log("[Notice]：获取成功",
+                            "详细：" + message + "(get) <- '获取'",
+                            style="#a4ff8f")
+            else:
+                self._c.log("[Error]：获取失败", style="#ff8f8f")
+        return echoTypeMode(data)
+
+    @property
+    def info(self):
+        return self._get("插件信息")
+
+
 class tempTypeMode:
     def __init__(self, session: str, url: str, gid: int):
         self._url = url
@@ -503,13 +529,19 @@ class eventTypeMode:
     def __init__(self, session, uri, eventId):
         self._session = session
         self._url = uri
-        self._eventId = eventId
+        self._eventId = eventId  # 事件ID
 
     def __repr__(self):
         return "请选择事件处理类型"
 
     def newFriend(self, target: int, groupId: int = 0):
-        return expand.expandEvent(self._url, self._session, target, self._eventId, groupId)
+        return expand.expandEventNewFriend(self._url, self._session, target, self._eventId, groupId)
+
+    def newJoinGroup(self, target: int, groupId: int):
+        return expand.expandEventJoinGroup(self._url, self._session, target, self._eventId, groupId)
+
+    def newBotJoinGroup(self, target: int, groupId: int, fromId: int):
+        return expand.expandEventBotJoinGroup(self._url, self._session, target, self._eventId, groupId, fromId)
 
 
 class echoTypeMode:
