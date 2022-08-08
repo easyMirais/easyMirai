@@ -1,11 +1,5 @@
 import re
-
-try:
-    from rich.console import Console
-
-    rh: bool = True
-except ImportError as ip:
-    rh: bool = False
+from rich.console import Console
 
 import requests as po
 
@@ -28,8 +22,20 @@ _config = {
             "sendNudge": "/sendNudge"
         }
     },
+    "action": {
+        "mute": "/mute",
+        "unmute": "/unmute",
+        "muteAll": "/muteAll",
+        "unmuteAll": "/unmuteAll",
+        "kick": "/kick",
+        "quit": "/quit",
+        "deleteFriend": "/deleteFriend",
+    },
+    "event": {
+        "newFriend": "/resp/newFriendRequestEvent",
+    },
     "upload": {
-        "uploadImage": "/uploadImage"
+        "uploadImage": "/uploadImage",
     }
 }
 
@@ -192,6 +198,45 @@ class expandTemp:
         return models.echoTypeMode(data)
 
 
+class expandEvent:
+    def __init__(self, url, session, target, eventId, groupId):
+        self._url = url
+        self._session = session
+        self._target = target
+        self._eventId = eventId
+        self._groupId = groupId
+        self._c = Console()
+
+    def _request(self, code: int, eventId, message):
+        data = {
+            "sessionKey": self._session,
+            "eventId": self._eventId,
+            "fromId": eventId,
+            "groupId": self._groupId,
+            "operate": code,
+            "message": message
+        }
+        data = po.post(self._url + _config["event"]["newFriend"], data=json.dumps(data))
+        if data.status_code == 200:
+            data = json.loads(data.text)
+            if data["code"] == 0:
+                self._c.log("[Notice]：好友添加事件处理成功",
+                            "详细：" + str(self._target) + "(Friend) <- '" + str(code) + "'",
+                            style="#a4ff8f")
+            else:
+                self._c.log("[Error]：好友添加事件处理失败", style="#ff8f8f")
+        return models.echoTypeMode(data)
+
+    def yes(self, message: str = ""):
+        return self._request(1, self._eventId, message)
+
+    def no(self, message: str = ""):
+        return self._request(0, self._eventId, message)
+
+    def black(self, message: str = ""):
+        return self._request(2, self._eventId, message)
+
+
 class expandUploadImage:
     def __init__(self, url, session, path):
         self._url = url
@@ -225,6 +270,173 @@ class expandUploadImage:
     @property
     def temp(self):
         return self._context("temp", self._path)
+
+
+class expandActionGroup:
+    def __init__(self, url, session, gid):
+        self._url = url
+        self._session = session
+        self._target = gid
+        self._c = Console()
+
+    def mute(self, target: int):
+        return expandActionGroupMute(self._url, self._session, self._target, target)
+
+    def unmute(self, target: int):
+        data = {
+            "sessionKey": self._session,
+            "target": self._target,
+            "memberId": target,
+        }
+        data = po.post(self._url + _config["action"]["unmute"], data=json.dumps(data))
+        if data.status_code == 200:
+            data = json.loads(data.text)
+
+            if data["code"] == 0:
+                self._c.log("[Notice]：解除禁言成功",
+                            "详细：" + str(self._target) + "(Group) <- '" + str(target) + "'",
+                            style="#a4ff8f")
+            else:
+                self._c.log("[Error]：解除禁言失败", style="#ff8f8f")
+        return models.echoTypeMode(data)
+
+    @property
+    def muteAll(self):
+        data = {
+            "sessionKey": self._session,
+            "target": self._target,
+        }
+        data = po.post(self._url + _config["action"]["muteAll"], data=json.dumps(data))
+        if data.status_code == 200:
+            data = json.loads(data.text)
+
+            if data["code"] == 0:
+                self._c.log("[Notice]：全体禁言成功",
+                            "详细：" + str(self._target) + "(Group) <- 'muteAll'",
+                            style="#a4ff8f")
+            else:
+                self._c.log("[Error]：全体禁言失败", style="#ff8f8f")
+        return models.echoTypeMode(data)
+
+    @property
+    def unMuteAll(self):
+        data = {
+            "sessionKey": self._session,
+            "target": self._target,
+        }
+        data = po.post(self._url + _config["action"]["unmuteAll"], data=json.dumps(data))
+        if data.status_code == 200:
+            data = json.loads(data.text)
+
+            if data["code"] == 0:
+                self._c.log("[Notice]：全体禁言成功",
+                            "详细：" + str(self._target) + "(Group) <- 'unMuteAll'",
+                            style="#a4ff8f")
+            else:
+                self._c.log("[Error]：全体禁言失败", style="#ff8f8f")
+        return models.echoTypeMode(data)
+
+    def kick(self, target: int):
+        data = {
+            "sessionKey": self._session,
+            "target": self._target,
+            "memberId": target,
+            "msg": "您已被移出群聊"
+        }
+        data = po.post(self._url + _config["action"]["kick"], data=json.dumps(data))
+        if data.status_code == 200:
+            data = json.loads(data.text)
+            if data["code"] == 0:
+                self._c.log("[Notice]：移除群成员成功",
+                            "详细：" + str(self._target) + "(Group) <- '" + str(target) + "'",
+                            style="#a4ff8f")
+            else:
+                self._c.log("[Error]：移除群成员失败", style="#ff8f8f")
+        return models.echoTypeMode(data)
+
+    @property
+    def quit(self):
+        data = {
+            "sessionKey": self._session,
+            "target": self._target,
+        }
+        data = po.post(self._url + _config["action"]["quit"], data=json.dumps(data))
+        if data.status_code == 200:
+            data = json.loads(data.text)
+            if data["code"] == 0:
+                self._c.log("[Notice]：退出群聊成功",
+                            "详细：" + str(self._target) + "(Group) <- 'quit'",
+                            style="#a4ff8f")
+            else:
+                self._c.log("[Error]：退出群聊失败", style="#ff8f8f")
+        return models.echoTypeMode(data)
+
+
+class expandActionFriend:
+    def __init__(self, url, session):
+        self._url = url
+        self._session = session
+        self._c = Console()
+
+    def deleteFriend(self, target: int):
+        data = {
+            "sessionKey": self._session,
+            "target": target,
+        }
+        data = po.post(self._url + _config["action"]["deleteFriend"], data=json.dumps(data))
+        if data.status_code == 200:
+            data = json.loads(data.text)
+            if data["code"] == 0:
+                self._c.log("[Notice]：移除好友成功",
+                            "详细：" + str(target) + "(Friend) <- 'deleteFriend'",
+                            style="#a4ff8f")
+            else:
+                self._c.log("[Error]：移除好友失败", style="#ff8f8f")
+        return models.echoTypeMode(data)
+
+
+class expandActionGroupMute:
+    def __init__(self, url, session, target, memberId):
+        self._url = url
+        self._session = session
+        self._target = target
+        self._memberId = memberId
+        self._c = Console()
+
+    def _request(self, time: int):
+        if time >= 2592000:
+            time = 2591999
+        data = {
+            "sessionKey": self._session,
+            "target": self._target,
+            "memberId": self._memberId,
+            "time": time
+        }
+        data = po.post(self._url + _config["action"]["mute"], data=json.dumps(data))
+        if data.status_code == 200:
+            data = json.loads(data.text)
+            if data["code"] == 0:
+                self._c.log("[Notice]：禁言成功",
+                            "详细：" + str(self._target) + "(Group) <- '" + str(time) + " s " + str(self._memberId) + "'",
+                            style="#a4ff8f")
+            else:
+                self._c.log("[Error]：禁言失败", style="#ff8f8f")
+        return models.echoTypeMode(data)
+
+    def s(self, second: int):
+        return self._request(second)
+
+    def m(self, minute: int):
+        second = minute * 60
+        return self._request(second)
+
+    def h(self, minute: int):
+        second = minute * 60 * 60
+        return self._request(second)
+
+    def d(self, day: int):
+        second = day * 60 * 24 * 60
+        return self._request(second)
 
 
 def _uploadImage(path: str, session, name, url: str):
