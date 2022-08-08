@@ -67,10 +67,10 @@ if message == "text":
 
 **本项目使用AGPLv3**
 
-TST里存放着历代测试Alpha版本，即最原始版本(不建议使用)
+TestProject里存放着历代测试开发版本，即最原始版本(不建议使用仅🉑️用来学习使用)
 
 此项目创建于**2022.05.15**，如果出现开发程序上的各种问题欢迎在**issues**发布！
 
 **[⬆ back to top](#目录)**
 
-<div style="text-align: center;">easyMirai@ExMikuPro</div>
+<div style="text-align: center;">easyMirai@ExMikuPro&HexMikuMax</div>
