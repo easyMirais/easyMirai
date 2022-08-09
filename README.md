@@ -30,7 +30,7 @@
 import easyMirai
 
 if __name__ == '__main__':
-    mirai = easyMirai.Mirai("YouHost", "YouPort", "YouKey", "YouQid")
+    mirai = easyMirai.Mirai("YouHost", "YouPort", "YouQid", "YouKey")
     mirai.send.friend(12345678).plain("hello world!").dictionary
 
 ```
