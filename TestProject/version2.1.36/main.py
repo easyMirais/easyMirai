@@ -3,7 +3,7 @@ import time
 import method
 
 if __name__ == '__main__':
-    easyMirai = method.Mirai("http://127.0.0.1", "8080", "2508417507", "INITKEYxWntQVgk")
+    easyMirai = method.Mirai("http://127.0.0.1", "2233", "2508417507", "INITKEYxWntQVgk")
     # print(easyMirai.send.friend(3177045556).plain("你好哇哇哇哇哇～").json)
     # print(easyMirai.send.friend(3177045556).face(237).json)
     # print(easyMirai.send.friend(3177045556).image("./image.png").dictionary)
@@ -68,3 +68,7 @@ if __name__ == '__main__':
     # 45
 
     # print(easyMirai.set.essence(117).dictionary)
+
+    # print(easyMirai.set.group(862453481).name("easyMirai").dictionary)
+    # print(easyMirai.set.group(862453481).announcement("这是一个公告").dictionary)
+

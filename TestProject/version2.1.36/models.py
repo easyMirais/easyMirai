@@ -566,6 +566,10 @@ class setTypeMode:
     def proFile(self):
         return expand.expandGetProFile(self._url, self._session)
 
+    def group(self, target: int):
+        # 修改群相关设置
+        return expand.expandSetGroupConfig(self._url, self._session, target)
+
 
 class tempTypeMode:
     def __init__(self, session: str, url: str, gid: int):
