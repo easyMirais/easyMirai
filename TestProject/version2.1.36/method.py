@@ -42,7 +42,7 @@ class Init:
         except Exception as re:
             request = re
             self._c.log("[Alert]：地址或端口有误，详细：未查询到Mirai HTTP服务器", style="#fb48a0")
-            exit()
+            exit(404)
         if request.status_code == 200:
             data = json.loads(request.text)
             if data["code"] == 0:
@@ -118,7 +118,12 @@ def _stop():
         "sessionKey": _config["data"]["session"],
         "qq": _config["data"]["botId"]
     }
-    data = req.post(url=_config["data"]["url"] + _config["release"], data=json.dumps(data))
+    try:
+        data = req.post(url=_config["data"]["url"] + _config["release"], data=json.dumps(data))
+    except Exception as re:
+        requests = re
+        _c.log("[Alert]：地址或端口有误，详细：未查询到Mirai HTTP服务器，无法注销Session", style="#fb48a0")
+        exit(404)
     if data.status_code == 200:
         data = json.loads(data.text)
         if data["code"] == 0:
