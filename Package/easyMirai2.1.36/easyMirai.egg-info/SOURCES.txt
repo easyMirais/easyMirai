@@ -1,0 +1,14 @@
+LICENSE
+MANIFEST.in
+README.md
+setup.py
+easyMirai/__init__.py
+easyMirai/__version__.py
+easyMirai/expand.py
+easyMirai/method.py
+easyMirai/models.py
+easyMirai.egg-info/PKG-INFO
+easyMirai.egg-info/SOURCES.txt
+easyMirai.egg-info/dependency_links.txt
+easyMirai.egg-info/requires.txt
+easyMirai.egg-info/top_level.txt
