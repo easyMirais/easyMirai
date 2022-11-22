@@ -1,0 +1,21 @@
+{
+  "send": {
+    "friend": {
+      "sendFriendMessage": "/sendFriendMessage"
+    },
+    "group": {
+      "sendGroupMessage": "/sendGroupMessage"
+    },
+    "temp": {
+      "sendTempMessage": "/sendTempMessage"
+    },
+    "recall": "/recall"
+  },
+  "get": {
+    "info": "/about",
+    "groupConfig": "/groupConfig"
+  },
+  "set": {
+    "essence": "/setEssence"
+  }
+}
