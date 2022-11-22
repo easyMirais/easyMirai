@@ -49,10 +49,10 @@ if __name__ == '__main__':
 
     # print(easyMirai.get.info.dictionary)
 
-    # print(easyMirai.get.message.count.dictionary)
+    print(easyMirai.get.message.count().dictionary)
     # print(easyMirai.get.message.fetch(1).dictionary)
     # print(easyMirai.get.message.fetchLatest(1).dictionary)
-    print(easyMirai.get.message.peek(1).dictionary)
+    # print(easyMirai.get.message.peek(1).dictionary)
     # print(easyMirai.get.message.peekLatest(1).dictionary)
     # print(easyMirai.get.message.fromId(21261).dictionary)
 
