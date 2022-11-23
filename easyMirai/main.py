@@ -36,7 +36,7 @@ if __name__ == '__main__':
     # print(easyMirai.action(862453481).group.kick(2181376101).dictionary)
     # print(easyMirai.action(862453481).group.quit.dictionary)
 
-    # print(easyMirai.action.friend.deleteFriend(2894472041).dictionary)
+    print(easyMirai.action.friend.deleteFriend(2894472041).dictionary)
 
     # print(easyMirai.upload.image("./image.png").friend.dictionary)
 
@@ -45,7 +45,7 @@ if __name__ == '__main__':
     # print(easyMirai.event(12345678).newBotJoinGroup(87654321, 2468, 27145).yes("接受邀请加入群聊").dictionary)
     # 30
 
-    # print(easyMirai.get.info.dictionary)
+    print(easyMirai.get.info.dictionary)
 
     # print(easyMirai.get.message.count().dictionary)
     # print(easyMirai.get.message.fetch(1).dictionary)
