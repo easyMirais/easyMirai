@@ -1,0 +1,22 @@
+
+/.idea/
+.idea/*
+/.idea/*
+
+
+# Bulid Dir #
+build/
+
+# Test File
+/test
+
+# Package Files #
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Log #
+*.log
