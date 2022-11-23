@@ -10,6 +10,8 @@
 
 > 注意⚠️：不与1.0版本相兼容 1.0版本将停留在**1.2.36 LTS**版本 
 
+开发文档请移步到[easyMirai Wiki](https://github.com/easyMirais/easyMirai/wiki/Home)
+
 > 注意⚠：当从以前升级到此版本(2.27.39)需要将`get.message.count`修改成`get.message.count()`可以传入bool类型，用于在重复调用`get.message.count`以防止日志过多造成控制台崩溃
 > 
 > True:仅不输出get类日志 ， False输出get类日志
