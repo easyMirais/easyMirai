@@ -1,0 +1,2 @@
+include README.md LICENSE
+global-include expand.json models.json
