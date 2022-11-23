@@ -3,6 +3,11 @@
 .idea/*
 /.idea/*
 
+# Macos Dir #
+
+.DS_Store/*
+/.DS_Store/*
+*/.DS_Store/*
 
 # Bulid Dir #
 build/
