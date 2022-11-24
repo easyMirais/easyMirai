@@ -1,9 +1,20 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# @Author   : SFNCO-Studio
+# @Time     : 2022/11/24 16:52
+# @File     : echoTypeMode.py
+# @Project  : Deep in easyMirai
+# @Uri      : https://sfnco.com.cn/
 import json
+
+"""
+将输出格式化方便调用
+"""
 
 
 class echoTypeMode:
 
-    def __init__(self, context):
+    def __init__(self, context: dict):
         self._context = context
 
     def __repr__(self):
