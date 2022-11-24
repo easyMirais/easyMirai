@@ -1,0 +1,43 @@
+{
+  "send": {
+    "friend": {
+      "sendFriendMessage": "/sendFriendMessage"
+    },
+    "group": {
+      "sendGroupMessage": "/sendGroupMessage"
+    },
+    "temp": {
+      "sendTempMessage": "/sendTempMessage"
+    },
+    "recall": "/recall"
+  },
+  "set": {
+    "essence": "/setEssence"
+  },
+  "action": {
+    "mute": "/mute",
+    "unmute": "/unmute",
+    "muteAll": "/muteAll",
+    "unmuteAll": "/unmuteAll",
+    "kick": "/kick",
+    "quit": "/quit",
+    "deleteFriend": "/deleteFriend"
+  },
+  "get": {
+    "info": "/about",
+    "count": "/countMessage",
+    "fetchMessage": "/fetchMessage",
+    "fetchLatestMessage": "/fetchLatestMessage",
+    "peekMessage": "/peekMessage",
+    "peekLatestMessage": "/peekLatestMessage",
+    "messageFromId": "/messageFromId",
+    "friendList": "/friendList",
+    "groupList": "/groupList",
+    "memberList": "/memberList",
+    "friendProfile": "/friendProfile",
+    "botProfile": "/botProfile",
+    "memberProfile": "/memberProfile",
+    "userProfile": "/userProfile",
+    "groupConfig": "/groupConfig"
+  }
+}

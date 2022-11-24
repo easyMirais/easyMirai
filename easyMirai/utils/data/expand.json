@@ -11,7 +11,8 @@
     },
     "nudge": {
       "sendNudge": "/sendNudge"
-    }
+    },
+    "recall": "/recall"
   },
   "action": {
     "mute": "/mute",

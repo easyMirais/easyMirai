@@ -6,12 +6,12 @@ import atexit
 import requests as req
 from rich.console import Console
 
-from .models.sendType import sendTypeMode
-from .models.getType import getTypeMode
-from .models.setType import setTypeMode
-from .models.uploadType import uploadTypeMode
-from .models.actionType import actionTypeMode
-from .models.eventType import eventTypeMode
+from .sendType import sendTypeMode
+from .getType import getTypeMode
+from .setType import setTypeMode
+from .uploadType import uploadTypeMode
+from .actionType import actionTypeMode
+from .eventType import eventTypeMode
 
 _config = {
     "about": "/about",
@@ -27,7 +27,7 @@ _config = {
 
 
 class Init:
-    def __init__(self, host: str, port: str, botId: str, key: str, maxWork: int = 8):
+    def __init__(self, host: str, port: str, botId: str, key: str, maxWork: int = 8, isSlice: bool = False):
         self._host: str = host
         self._port: str = port
         self._botId: str = botId
@@ -38,6 +38,7 @@ class Init:
         self._testServer()
         self._pool = self._createPool(maxWork)  # 创建线程池
         self._beginSession()
+        self._isSlice = isSlice
         _config["data"]["url"] = self._url
         _config["data"]["botId"] = self._botId
         _config["data"]["session"] = self._session
@@ -94,28 +95,26 @@ class Mirai(Init):
     # 开放接口
     @property
     def send(self):
-        return sendTypeMode(session=self._session, uri=str(self._url))
+        return sendTypeMode(session=self._session, uri=str(self._url), isSlice=self._isSlice)
 
     @property
     def get(self):
-        return getTypeMode(session=self._session, uri=str(self._url))
+        return getTypeMode(session=self._session, uri=str(self._url), isSlice=self._isSlice)
 
     @property
     def set(self):
-        return setTypeMode(session=self._session, uri=str(self._url))
+        return setTypeMode(session=self._session, uri=str(self._url), isSlice=self._isSlice)
 
     @property
     def upload(self):
-        return uploadTypeMode(session=self._session, uri=str(self._url))
+        return uploadTypeMode(session=self._session, uri=str(self._url), isSlice=self._isSlice)
 
     @property
     def action(self):
-        return actionTypeMode(session=self._session, uri=str(self._url))
+        return actionTypeMode(session=self._session, uri=str(self._url), isSlice=self._isSlice)
 
     def event(self, eventId: int):
-        return eventTypeMode(session=self._session, uri=str(self._url), eventId=eventId)
-
-    # todo 添加File操作类
+        return eventTypeMode(session=self._session, uri=str(self._url), eventId=eventId,isSlice=self._isSlice)
 
 
 @atexit.register
@@ -128,7 +127,7 @@ def _stop():
     try:
         data = req.post(url=_config["data"]["url"] + _config["release"], data=json.dumps(data))
     except Exception as re:
-        requests = re
+        _requests = re
         _c.log("[Alert]：地址或端口有误，详细：未查询到Mirai HTTP服务器，无法注销Session", style="#fb48a0")
         exit(404)
     if data.status_code == 200:
