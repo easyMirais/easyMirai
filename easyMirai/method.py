@@ -13,6 +13,8 @@ from .uploadType import uploadTypeMode
 from .actionType import actionTypeMode
 from .eventType import eventTypeMode
 
+from .__version__ import __version__
+
 _config = {
     "about": "/about",
     "verify": "/verify",
@@ -35,10 +37,13 @@ class Init:
         self._session: str = ""
         self._c = Console()
         self._url = self._host + ":" + self._port  # 格式化Bot HTTP API地址
+        self.__version__ = __version__
+        self._c.log("[Notice]：当前easyMirai版本为 " + self.__version__, style="#a4ff8f")
         self._testServer()
         self._pool = self._createPool(maxWork)  # 创建线程池
         self._beginSession()
         self._isSlice = isSlice
+
         _config["data"]["url"] = self._url
         _config["data"]["botId"] = self._botId
         _config["data"]["session"] = self._session
@@ -114,7 +119,7 @@ class Mirai(Init):
         return actionTypeMode(session=self._session, uri=str(self._url), isSlice=self._isSlice)
 
     def event(self, eventId: int):
-        return eventTypeMode(session=self._session, uri=str(self._url), eventId=eventId,isSlice=self._isSlice)
+        return eventTypeMode(session=self._session, uri=str(self._url), eventId=eventId, isSlice=self._isSlice)
 
 
 @atexit.register
