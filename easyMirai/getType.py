@@ -36,8 +36,8 @@ class getTypeMode:
                     self._c.log("[Error]：获取失败", style="#ff8f8f")
             elif data["code"] != 0:
                 self._c.log("[Error]：获取失败", style="#ff8f8f")
-            else:
-                data = {"code": data.status_code, "msg": "网络错误"}
+        else:
+            data = {"code": data.status_code, "msg": "网络错误"}
         return echoTypeMode(data)
 
     @property
