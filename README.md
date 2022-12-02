@@ -1,6 +1,6 @@
 # easyMirai
 
-![](../easyMirai.wiki/assets/title-v2.png)
+![](./Docs/assets/image/title-v2.png)
 
 *介绍本项目的注意事项&主体结构*
 
