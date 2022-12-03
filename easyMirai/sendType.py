@@ -12,7 +12,7 @@ import re
 from rich.console import Console
 import requests
 
-from .utils.echo.echoTypeMode import echoTypeMode
+from easyMirai.echo.echoTypeMode import echoTypeMode
 from .utils.data.getData import getApi
 
 api = getApi("expand")
