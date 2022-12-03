@@ -11,7 +11,7 @@ import requests
 from rich.console import Console
 
 from easyMirai.echo.echoTypeMode import echoTypeMode
-from .utils.data.getData import getApi
+from easyMirai.data.getData import getApi
 
 api = getApi("models")
 
@@ -88,7 +88,6 @@ class GetMessage:
 
     def _request(self, message, to: str, params: dict):
         data = requests.get(self._url + str(api["get"][to]), params=params)
-
         if data.status_code == 200:
             data = json.loads(data.text)
             if not self._isSlice:

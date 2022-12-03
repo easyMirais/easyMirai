@@ -13,7 +13,7 @@ from rich.console import Console
 import requests
 
 from easyMirai.echo.echoTypeMode import echoTypeMode
-from .utils.data.getData import getApi
+from easyMirai.data.getData import getApi
 
 api = getApi("expand")
 
@@ -56,8 +56,8 @@ class sendTypeMode:
                     self._c.log("[Error]：撤回失败", style="#ff8f8f")
             elif data["code"] != 0:
                 self._c.log("[Error]：撤回失败", style="#ff8f8f")
-            else:
-                data = {"code": data.status_code, "msg": "网络错误"}
+        else:
+            data = {"code": data.status_code, "msg": "网络错误"}
 
         return echoTypeMode(data)
 
@@ -193,11 +193,10 @@ class friendTypeMode:
                     self._c.log("[Error]：骰子发送失败", style="#ff8f8f")
             elif data["code"] != 0:
                 self._c.log("[Error]：骰子发送失败", style="#ff8f8f")
-            else:
-                data = {"code": data.status_code, "msg": "网络错误"}
+        else:
+            data = {"code": data.status_code, "msg": "网络错误"}
         return echoTypeMode(data)
 
-    # todo 添加musicShare,app,other方法
 
 
 class groupTypeMode:
@@ -233,8 +232,8 @@ class groupTypeMode:
                     self._c.log("[Error]：At发送失败", style="#ff8f8f")
             elif data["code"] != 0:
                 self._c.log("[Error]：At发送失败", style="#ff8f8f")
-            else:
-                data = {"code": data.status_code, "msg": "网络错误"}
+        else:
+            data = {"code": data.status_code, "msg": "网络错误"}
 
         return echoTypeMode(data)
 
@@ -261,8 +260,8 @@ class groupTypeMode:
                     self._c.log("[Error]：AtAll发送失败", style="#ff8f8f")
             elif data["code"] != 0:
                 self._c.log("[Error]：AtAll发送失败", style="#ff8f8f")
-            else:
-                data = {"code": data.status_code, "msg": "网络错误"}
+        else:
+            data = {"code": data.status_code, "msg": "网络错误"}
 
         return echoTypeMode(data)
 
@@ -287,8 +286,8 @@ class groupTypeMode:
                     self._c.log("[Error]：文本发送失败", style="#ff8f8f")
             elif data["code"] != 0:
                 self._c.log("[Error]：文本发送失败", style="#ff8f8f")
-            else:
-                data = {"code": data.status_code, "msg": "网络错误"}
+        else:
+            data = {"code": data.status_code, "msg": "网络错误"}
 
         return echoTypeMode(data)
 
@@ -326,8 +325,8 @@ class groupTypeMode:
                     self._c.log("[Error]：图片发送失败", style="#ff8f8f")
             elif data["code"] != 0:
                 self._c.log("[Error]：图片发送失败", style="#ff8f8f")
-            else:
-                data = {"code": data.status_code, "msg": "网络错误"}
+        else:
+            data = {"code": data.status_code, "msg": "网络错误"}
 
         return echoTypeMode(data)
 
@@ -356,8 +355,8 @@ class groupTypeMode:
                     self._c.log("[Error]：表情发送失败", style="#ff8f8f")
             elif data["code"] != 0:
                 self._c.log("[Error]：表情发送失败", style="#ff8f8f")
-            else:
-                data = {"code": data.status_code, "msg": "网络错误"}
+        else:
+            data = {"code": data.status_code, "msg": "网络错误"}
 
         return echoTypeMode(data)
 
@@ -390,8 +389,8 @@ class groupTypeMode:
                     self._c.log("[Error]：骰子发送失败", style="#ff8f8f")
             elif data["code"] != 0:
                 self._c.log("[Error]：骰子发送失败", style="#ff8f8f")
-            else:
-                data = {"code": data.status_code, "msg": "网络错误"}
+        else:
+            data = {"code": data.status_code, "msg": "网络错误"}
 
         return echoTypeMode(data)
 
@@ -486,8 +485,8 @@ class groupPoke:
                     self._c.log("[Error]：戳一戳发送失败", style="#ff8f8f")
             elif data["code"] != 0:
                 self._c.log("[Error]：戳一戳发送失败", style="#ff8f8f")
-            else:
-                data = {"code": data.status_code, "msg": "网络错误"}
+        else:
+            data = {"code": data.status_code, "msg": "网络错误"}
 
         return echoTypeMode(data)
 
@@ -530,8 +529,8 @@ class poke:
                     self._c.log("[Error]：戳一戳发送失败", style="#ff8f8f")
             elif data["code"] != 0:
                 self._c.log("[Error]：戳一戳发送失败", style="#ff8f8f")
-            else:
-                data = {"code": data.status_code, "msg": "网络错误"}
+        else:
+            data = {"code": data.status_code, "msg": "网络错误"}
 
         return echoTypeMode(data)
 
@@ -559,7 +558,7 @@ def _uploadImage(path: str, session, name, url: str):
 
 
 class Temp:
-    def __init__(self, url, session, target, gid,isSlice: bool):
+    def __init__(self, url, session, target, gid, isSlice: bool):
         self._url = url
         self._session = session
         self._target = target
@@ -588,8 +587,8 @@ class Temp:
                     self._c.log("[Error]：文本发送失败", style="#ff8f8f")
             elif data["code"] != 0:
                 self._c.log("[Error]：文本发送失败", style="#ff8f8f")
-            else:
-                data = {"code": data.status_code, "msg": "网络错误"}
+        else:
+            data = {"code": data.status_code, "msg": "网络错误"}
         return echoTypeMode(data)
 
     def image(self, path: str):
@@ -627,8 +626,8 @@ class Temp:
                     self._c.log("[Error]：图片发送失败", style="#ff8f8f")
             elif data["code"] != 0:
                 self._c.log("[Error]：图片发送失败", style="#ff8f8f")
-            else:
-                data = {"code": data.status_code, "msg": "网络错误"}
+        else:
+            data = {"code": data.status_code, "msg": "网络错误"}
         return echoTypeMode(data)
 
     def face(self, faceId: int, name: str = ""):
@@ -656,6 +655,6 @@ class Temp:
                     self._c.log("[Error]：表情发送失败", style="#ff8f8f")
             elif data["code"] != 0:
                 self._c.log("[Error]：表情发送失败", style="#ff8f8f")
-            else:
-                data = {"code": data.status_code, "msg": "网络错误"}
+        else:
+            data = {"code": data.status_code, "msg": "网络错误"}
         return echoTypeMode(data)
