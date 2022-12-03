@@ -11,7 +11,7 @@ from rich.console import Console
 import requests
 
 from easyMirai.echo.echoTypeMode import echoTypeMode
-from .utils.data.getData import getApi
+from easyMirai.data.getData import getApi
 
 api = getApi("models")
 
@@ -99,8 +99,8 @@ class ActionGroup:
                     self._c.log("[Error]：解除全体禁言失败", style="#ff8f8f")
             elif data["code"] != 0:
                 self._c.log("[Error]：解除全体禁言失败", style="#ff8f8f")
-            else:
-                data = {"code": data.status_code, "msg": "网络错误"}
+        else:
+            data = {"code": data.status_code, "msg": "网络错误"}
 
         return echoTypeMode(data)
 
@@ -123,8 +123,8 @@ class ActionGroup:
                     self._c.log("[Error]：移除群成员失败", style="#ff8f8f")
             elif data["code"] != 0:
                 self._c.log("[Error]：移除群成员失败", style="#ff8f8f")
-            else:
-                data = {"code": data.status_code, "msg": "网络错误"}
+        else:
+            data = {"code": data.status_code, "msg": "网络错误"}
 
         return echoTypeMode(data)
 
@@ -146,8 +146,8 @@ class ActionGroup:
                     self._c.log("[Error]：退出群聊失败", style="#ff8f8f")
             elif data["code"] != 0:
                 self._c.log("[Error]：退出群聊失败", style="#ff8f8f")
-            else:
-                data = {"code": data.status_code, "msg": "网络错误"}
+        else:
+            data = {"code": data.status_code, "msg": "网络错误"}
 
         return echoTypeMode(data)
 
@@ -183,8 +183,8 @@ class ActionGroupMute:
                     self._c.log("[Error]：禁言失败", style="#ff8f8f")
             elif data["code"] != 0:
                 self._c.log("[Error]：禁言失败", style="#ff8f8f")
-            else:
-                data = {"code": data.status_code, "msg": "网络错误"}
+        else:
+            data = {"code": data.status_code, "msg": "网络错误"}
 
         return echoTypeMode(data)
 
@@ -228,7 +228,7 @@ class ActionFriend:
                     self._c.log("[Error]：移除好友失败", style="#ff8f8f")
             elif data["code"] != 0:
                 self._c.log("[Error]：移除好友失败", style="#ff8f8f")
-            else:
-                data = {"code": data.status_code, "msg": "网络错误"}
+        else:
+            data = {"code": data.status_code, "msg": "网络错误"}
 
         return echoTypeMode(data)

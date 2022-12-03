@@ -11,7 +11,7 @@ from rich.console import Console
 import requests
 
 from easyMirai.echo.echoTypeMode import echoTypeMode
-from .utils.data.getData import getApi
+from easyMirai.data.getData import getApi
 
 api = getApi("model")
 
@@ -68,8 +68,8 @@ class EventNewFriend:
                     self._c.log("[Error]：好友添加事件处理失败", style="#ff8f8f")
             elif data["code"] != 0:
                 self._c.log("[Error]：好友添加事件处理失败", style="#ff8f8f")
-            else:
-                data = {"code": data.status_code, "msg": "网络错误"}
+        else:
+            data = {"code": data.status_code, "msg": "网络错误"}
 
         return echoTypeMode(data)
 
@@ -114,8 +114,8 @@ class EventJoinGroup:
                     self._c.log("[Error]：用户入群申请事件处理失败", style="#ff8f8f")
             elif data["code"] != 0:
                 self._c.log("[Error]：用户入群申请事件处理失败", style="#ff8f8f")
-            else:
-                data = {"code": data.status_code, "msg": "网络错误"}
+        else:
+            data = {"code": data.status_code, "msg": "网络错误"}
 
         return echoTypeMode(data)
 
@@ -167,8 +167,8 @@ class EventBotJoinGroup:
                     self._c.log("[Error]：用户入群申请事件处理失败", style="#ff8f8f")
             elif data["code"] != 0:
                 self._c.log("[Error]：用户入群申请事件处理失败", style="#ff8f8f")
-            else:
-                data = {"code": data.status_code, "msg": "网络错误"}
+        else:
+            data = {"code": data.status_code, "msg": "网络错误"}
 
         return echoTypeMode(data)
 
