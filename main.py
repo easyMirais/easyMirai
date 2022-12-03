@@ -1,8 +1,8 @@
 import easyMirai
 
 if __name__ == '__main__':
-    easyMirai = easyMirai.Mirai("http://127.0.0.1", "8080", "2894472041", "INITKEYYlR3xGnM", isSlice=True)
-    print(easyMirai.__version__)
+    easyMirai = easyMirai.Mirai("http://127.0.0.1", "8080", "2894472041", "acceedasd", isSlice=True)
+    # print(easyMirai.__version__)
     # print(easyMirai.send.friend(3177045556).plain("你好哇哇哇哇哇～").json)  # ok
     # print(easyMirai.send.friend(3177045556).face(237).json)  # ok
     # print(easyMirai.send.friend(3177045556).image("./Docs/assets/image/title.png").dictionary) # ok
@@ -58,18 +58,18 @@ if __name__ == '__main__':
     # print(easyMirai.get.message.peekLatest(1).dictionary)
     # print(easyMirai.get.message.fromId(163).dictionary)
 
-    print(easyMirai.get.list.friend.dictionary)
-    print(easyMirai.get.list.group.dictionary)
-    print(easyMirai.get.list.member(862453481).dictionary)
+    # print(easyMirai.get.list.friend.dictionary)
+    # print(easyMirai.get.list.group.dictionary)
+    # print(easyMirai.get.list.member(862453481).dictionary)
 
-    # print(easyMirai.get.proFile.bot.dictionary)
+    # print(easyMirai.get.proFile.bot.json)
     # print(easyMirai.get.proFile.friend(2894472041).dictionary)
     # print(easyMirai.get.proFile.member(862453481, 3177045556).dictionary)
     # print(easyMirai.get.proFile.user(3177045556).dictionary)
     # print(easyMirai.get.groupConfig(862453481).dictionary)
     # 45
 
-    # print(easyMirai.set.essence(163).dictionary)  # todo 无效参数
+    # print(easyMirai.set.essence(163).dictionary)
 
     # print(easyMirai.set.group(862453481).name("easyMirai").dictionary)
     # print(easyMirai.set.group(862453481).announcement("这是一个公告").dictionary)

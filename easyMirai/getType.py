@@ -10,7 +10,7 @@ import json
 import requests
 from rich.console import Console
 
-from .utils.echo.echoTypeMode import echoTypeMode
+from easyMirai.echo.echoTypeMode import echoTypeMode
 from .utils.data.getData import getApi
 
 api = getApi("models")
