@@ -43,7 +43,7 @@ class sendTypeMode:
             "sessionKey": self._session,
             "target": target
         }
-        print(data)
+        print(json.dumps(data))
         data = requests.post(self._uri + str(api["send"]["recall"]), data=json.dumps(data))
         if data.status_code == 200:
             data = json.loads(data.text)

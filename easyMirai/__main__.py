@@ -6,4 +6,5 @@
 # @Project  : Deep in easyMirai
 # @Uri      : https://sfnco.com.cn/
 
-
+if __name__ == '__main__':
+    print("hello world!")

@@ -83,13 +83,14 @@ class Init:
             "sessionKey": self._session,
             "qq": self._botId
         }
+
         data = req.post(url=self._url + _config["bind"], data=json.dumps(data))
         if data.status_code == 200:
             data = json.loads(data.text)
             if data["code"] == 0:
                 self._c.log("[Notice]：绑定Session成功", "详细：session=" + self._session, style="#a4ff8f")
             else:
-                self._c.log("[Error]：绑定Session失败", style="#ff8f8f")
+                self._c.log("[Error]：绑定Session失败:"+ data["msg"], style="#ff8f8f")
 
 
 class Mirai(Init):
@@ -133,11 +134,8 @@ def _stop():
         data = req.post(url=_config["data"]["url"] + _config["release"], data=json.dumps(data))
     except Exception as re:
         _requests = re
-        _c.log("[Alert]：地址或端口有误，详细：未查询到Mirai HTTP服务器，无法注销Session", style="#fb48a0")
         exit(404)
     if data.status_code == 200:
         data = json.loads(data.text)
-        if data["code"] == 0:
-            _c.log("[Notice]：释放Session成功", "详细：session=" + _config["data"]["session"], style="#a4ff8f")
-        else:
-            _c.log("[Error]：释放Session失败", style="#ff8f8f")
+    if data["code"] == 0:
+        _c.log("[Notice]：释放Session成功", "详细：session=" + _config["data"]["session"], style="#a4ff8f")
