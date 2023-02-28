@@ -39,6 +39,7 @@ class Init:
         self._url = self._host + ":" + self._port  # 格式化Bot HTTP API地址
         self.__version__ = __version__
         self._c.log("[Notice]：当前easyMirai版本为 " + self.__version__, style="#a4ff8f")
+        self._c.log("[Notice]：项目文档&使用教程：https://github.com/easyMirais/easyMirai/wiki", style="#a4ff8f")
         self._testServer()
         self._pool = self._createPool(maxWork)  # 创建线程池
         self._beginSession()
@@ -90,7 +91,7 @@ class Init:
             if data["code"] == 0:
                 self._c.log("[Notice]：绑定Session成功", "详细：session=" + self._session, style="#a4ff8f")
             else:
-                self._c.log("[Error]：绑定Session失败:"+ data["msg"], style="#ff8f8f")
+                self._c.log("[Error]：绑定Session失败:" + data["msg"], style="#ff8f8f")
 
 
 class Mirai(Init):
