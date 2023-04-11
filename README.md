@@ -46,6 +46,10 @@ if __name__ == '__main__':
 
 更多案例请查阅 **Example** 目录，我们将持续更新相关案例，以方便调用！
 
+> 本Python库，为了方便各版本移植，除重大错误外理论上不会再次改变函数方法和命名～
+> 本库基于HTTP轮询实现，接下来会编写相对应的webSocket的相关程序～
+
+
 **[⬆ back to top](#目录)**
 
 ## 调用
@@ -85,4 +89,4 @@ if message == "text":
 
 **[⬆ back to top](#目录)**
 
-<div style="text-align: center;">easyMirai@ExMikuPro&HexMikuMax</div>
+<div style="text-align: center;">easyMirai@ExMikuPro&@HexMikuMax</div>
