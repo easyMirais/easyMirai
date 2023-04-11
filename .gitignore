@@ -130,3 +130,5 @@ dmypy.json
 
 
 main.py
+
+*_test.py
