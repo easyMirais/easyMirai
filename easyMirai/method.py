@@ -6,14 +6,14 @@ import atexit
 import requests as req
 from rich.console import Console
 
-from .sendType import sendTypeMode
-from .getType import getTypeMode
-from .setType import setTypeMode
-from .uploadType import uploadTypeMode
-from .actionType import actionTypeMode
-from .eventType import eventTypeMode
+from easyMirai.sendType import sendTypeMode
+from easyMirai.getType import getTypeMode
+from easyMirai.setType import setTypeMode
+from easyMirai.uploadType import uploadTypeMode
+from easyMirai.actionType import actionTypeMode
+from easyMirai.eventType import eventTypeMode
 
-from .__version__ import __version__
+from easyMirai.__version__ import __version__
 
 _config = {
     "about": "/about",
