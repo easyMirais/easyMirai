@@ -24,6 +24,7 @@ VERSION = '2.30.36'  # 版本号命名规范请参照 https://github.com/easyMir
 REQUIRED = [
     "requests",
     "rich"
+    "urllib3==1.26.2"
 ]
 
 # What packages are optional?
