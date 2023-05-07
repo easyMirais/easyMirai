@@ -24,7 +24,7 @@ VERSION = '2.31.36'  # 版本号命名规范请参照 https://github.com/easyMir
 # What packages are required for this module to be executed?
 REQUIRED = [
     "requests",
-    "rich"
+    "rich",
     "urllib3==1.26.2"
 ]
 
