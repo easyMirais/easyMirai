@@ -18,9 +18,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install wheel setuptools
           python setup.py bdist_wheel
-      - uses: pypa/gh-action-pypi-publish@master
 
-      - with:
+      - name: Publish distribution 📦 to Test PyPI
+        uses: pypa/gh-action-pypi-publish@master
+        with:
           password: ${{ secrets.EASYMIRAI_PYPI }}
 
 
