@@ -20,6 +20,7 @@ AUTHOR = 'ExMikuPro & HexMikuMax'
 REQUIRES_PYTHON = '>=3.6.0'
 VERSION = '2.31.36'  # 版本号命名规范请参照 https://github.com/easyMirais/easyMirai/blob/master/Docs/VersionNumber.md
 
+
 # What packages are required for this module to be executed?
 REQUIRED = [
     "requests",
