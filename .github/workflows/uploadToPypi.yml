@@ -20,5 +20,5 @@ name: uploadPypiProject
            python setup.py bdist_wheel
        - uses: pypa/gh-action-pypi-publish@master
 
-       with:
-         password: ${{ secrets.EASYMIRAI_PYPI }}
+       - with:
+          password: ${{ secrets.EASYMIRAI_PYPI }}
