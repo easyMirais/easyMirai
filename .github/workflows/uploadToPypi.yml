@@ -20,7 +20,7 @@ jobs:
           python setup.py bdist_wheel
       - uses: pypa/gh-action-pypi-publish@master
 
-      - with:
+      with:
         password: ${{ secrets.EASYMIRAI_PYPI }}
 
 
