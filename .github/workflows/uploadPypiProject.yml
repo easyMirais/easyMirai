@@ -5,6 +5,7 @@ on:
       - master
     paths:
       - setup.py
+      - easyMirai/__version__.py
 
 jobs:
   ubuntu-Build:
