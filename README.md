@@ -6,6 +6,8 @@
 
 **注意**本项目基于**开源软件** [Mirai](https://github.com/mamoe/mirai) 进行二次开发
 
+> easyMriai webSocket版本正在紧张开发中 >w< 详情：[easyMirai webSocket](https://github.com/easyMirais/easyMirai-webSocket)
+
 目前**easyMirai**已经进入全新的**2.0**时代！！🥳
 
 > 注意⚠️：不与1.0版本相兼容 1.0版本将停留在**1.2.36 LTS**版本 
