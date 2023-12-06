@@ -13,7 +13,7 @@ import requests
 from easyMirai.echo.echoTypeMode import echoTypeMode
 from easyMirai.data.getData import getApi
 
-api = getApi("model")
+api = getApi("expand")
 
 
 class eventTypeMode:
@@ -102,13 +102,13 @@ class EventJoinGroup:
             "operate": code,
             "message": message
         }
-        data = requests.post(self._url + api["event"]["newFriend"], data=json.dumps(data))
+        data = requests.post(self._url + api["event"]["joinGroup"], data=json.dumps(data))
         if data.status_code == 200:
             data = json.loads(data.text)
             if not self._isSlice:
                 if data["code"] == 0:
                     self._c.log("[Notice]：用户入群申请事件处理成功",
-                                "详细：" + str(self._target) + "(Friend) <- '" + str(code) + "'",
+                                "详细：" + str(self._target) + "(Group) <- '" + str(code) + "'",
                                 style="#a4ff8f")
                 else:
                     self._c.log("[Error]：用户入群申请事件处理失败", style="#ff8f8f")

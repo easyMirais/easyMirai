@@ -24,7 +24,8 @@
     "deleteFriend": "/deleteFriend"
   },
   "event": {
-    "newFriend": "/resp/newFriendRequestEvent"
+    "newFriend": "/resp/newFriendRequestEvent",
+    "joinGroup": "/resp/botInvitedJoinGroupRequestEvent"
   },
   "upload": {
     "uploadImage": "/uploadImage"
