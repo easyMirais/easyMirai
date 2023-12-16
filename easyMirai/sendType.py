@@ -84,7 +84,8 @@ class friendTypeMode:
             data = json.loads(data.text)
             if not self._isSlice:
                 if data["code"] == 0:
-                    self._c.log("[Notice]：文本发送成功", "详细：" + str(self._target) + "(Friend) <- '" + str(value) + "'",
+                    self._c.log("[Notice]：文本发送成功",
+                                "详细：" + str(self._target) + "(Friend) <- '" + str(value) + "'",
                                 style="#a4ff8f")
                 else:
                     self._c.log("[Error]：文本发送失败", style="#ff8f8f")
@@ -122,7 +123,8 @@ class friendTypeMode:
             data = json.loads(data.text)
             if not self._isSlice:
                 if data["code"] == 0:
-                    self._c.log("[Notice]：图片发送成功", "详细：" + str(self._target) + "(Friend) <- '" + str(value) + "'",
+                    self._c.log("[Notice]：图片发送成功",
+                                "详细：" + str(self._target) + "(Friend) <- '" + str(value) + "'",
                                 style="#a4ff8f")
                 else:
                     self._c.log("[Error]：图片发送失败", style="#ff8f8f")
@@ -152,7 +154,8 @@ class friendTypeMode:
             data = json.loads(data.text)
             if not self._isSlice:
                 if data["code"] == 0:
-                    self._c.log("[Notice]：表情发送成功", "详细：" + str(self._target) + "(Friend) <- '" + str(value) + "'",
+                    self._c.log("[Notice]：表情发送成功",
+                                "详细：" + str(self._target) + "(Friend) <- '" + str(value) + "'",
                                 style="#a4ff8f")
                 else:
                     self._c.log("[Error]：表情发送失败", style="#ff8f8f")
@@ -187,7 +190,8 @@ class friendTypeMode:
             data = json.loads(data.text)
             if not self._isSlice:
                 if data["code"] == 0:
-                    self._c.log("[Notice]：骰子发送成功", "详细：" + str(self._target) + "(Friend) <- '" + str(value) + "'",
+                    self._c.log("[Notice]：骰子发送成功",
+                                "详细：" + str(self._target) + "(Friend) <- '" + str(value) + "'",
                                 style="#a4ff8f")
                 else:
                     self._c.log("[Error]：骰子发送失败", style="#ff8f8f")
@@ -196,7 +200,6 @@ class friendTypeMode:
         else:
             data = {"code": data.status_code, "msg": "网络错误"}
         return echoTypeMode(data)
-
 
 
 class groupTypeMode:
@@ -226,7 +229,8 @@ class groupTypeMode:
             data = json.loads(data.text)
             if not self._isSlice:
                 if data["code"] == 0:
-                    self._c.log("[Notice]：At发送成功", "详细：" + str(self._target) + "(Group) <- 'at " + str(target) + "'",
+                    self._c.log("[Notice]：At发送成功",
+                                "详细：" + str(self._target) + "(Group) <- 'at " + str(target) + "'",
                                 style="#a4ff8f")
                 else:
                     self._c.log("[Error]：At发送失败", style="#ff8f8f")
@@ -236,6 +240,9 @@ class groupTypeMode:
             data = {"code": data.status_code, "msg": "网络错误"}
 
         return echoTypeMode(data)
+
+    def ats(self, target: int, display: str = ""):
+        return AtType(self._uri, self._session, self._target, target, self._target, display, self._isSlice)
 
     @property
     def atAll(self):
@@ -319,7 +326,8 @@ class groupTypeMode:
             if not self._isSlice:
                 if data["code"] == 0:
                     self._c.log("[Notice]：图片发送成功",
-                                "详细：" + str(self._target) + "(Group " + str(self._target) + ") <- '" + str(value) + "'",
+                                "详细：" + str(self._target) + "(Group " + str(self._target) + ") <- '" + str(
+                                    value) + "'",
                                 style="#a4ff8f")
                 else:
                     self._c.log("[Error]：图片发送失败", style="#ff8f8f")
@@ -383,7 +391,8 @@ class groupTypeMode:
             if not self._isSlice:
                 if data["code"] == 0:
                     self._c.log("[Notice]：骰子发送成功",
-                                "详细：" + str(self._target) + "(Group " + str(self._target) + ") <- '" + str(value) + "'",
+                                "详细：" + str(self._target) + "(Group " + str(self._target) + ") <- '" + str(
+                                    value) + "'",
                                 style="#a4ff8f")
                 else:
                     self._c.log("[Error]：骰子发送失败", style="#ff8f8f")
@@ -655,6 +664,98 @@ class Temp:
                     self._c.log("[Error]：表情发送失败", style="#ff8f8f")
             elif data["code"] != 0:
                 self._c.log("[Error]：表情发送失败", style="#ff8f8f")
+        else:
+            data = {"code": data.status_code, "msg": "网络错误"}
+        return echoTypeMode(data)
+
+
+class AtType:  # at后添加字符串
+    def __init__(self, url, session, _target, target, gid, display, isSlice: bool):
+        self._url = url
+        self._session = session
+        self._target = _target  # 机器人qq号
+        self._gid = gid
+        self._isSlice = isSlice
+        self._c = Console()
+        self.target = target
+        self.display = display
+
+    def plain(self, context):  # at后追加文本
+        data = {
+            "sessionKey": self._session,
+            "target": self._target,
+            "messageChain": [
+                {
+                    "type": "At",
+                    "target": self.target,
+                    "display": self.display
+                },
+                {"type": "Plain", "text": " "+context},
+            ]
+        }
+        data = requests.post(self._url + api["send"]["group"]["sendGroupMessage"], data=json.dumps(data))
+        if data.status_code == 200:
+            data = json.loads(data.text)
+            if not self._isSlice:
+                if data["code"] == 0:
+                    self._c.log("[Notice]：AT + 文本发送成功",
+                                "详细：" + str(self._target) + "(Group " + str(self._target) + ") <- '" + str(
+                                    context) + "'",
+                                style="#a4ff8f")
+                else:
+                    self._c.log("[Error]：AT + 文本发送失败", style="#ff8f8f")
+            elif data["code"] != 0:
+                self._c.log("[Error]：AT + 文本发送失败", style="#ff8f8f")
+        else:
+            data = {"code": data.status_code, "msg": "网络错误"}
+
+        return echoTypeMode(data)
+
+    def image(self, path):  # at后追加图片
+        rec = re.compile(r'[a-zA-z]+://[^\s]*')
+        if re.search(rec, path):
+            data = {
+                "sessionKey": self._session,
+                "qq": self._target,
+                "group": self._gid,
+                "messageChain": [
+                    {
+                        "type": "At",
+                        "target": self.target,
+                        "display": self.display
+                    },
+                    {"type": "Image", "url": path},
+                ]
+            }
+        else:
+            data = {
+                "sessionKey": self._session,
+                "qq": self._target,
+                "group": self._gid,
+                "messageChain": [
+                    {
+                        "type": "At",
+                        "target": self.target,
+                        "display": self.display
+                    },
+                    {
+                        "type": "Image",
+                        "url": _uploadImage(path, self._session, "group", self._url)
+                    }
+                ]
+            }
+        data = requests.post(self._url + api["send"]["group"]["sendGroupMessage"], data=json.dumps(data))
+        if data.status_code == 200:
+            data = json.loads(data.text)
+            if not self._isSlice:
+                if data["code"] == 0:
+                    self._c.log("[Notice]：AT + 图片发送成功",
+                                "详细：" + str(self._target) + "(Temp " + str(self._gid) + ") <- '" + str(path) + "'",
+                                style="#a4ff8f")
+                else:
+                    self._c.log("[Error]：AT + 图片发送失败", style="#ff8f8f")
+            elif data["code"] != 0:
+                self._c.log("[Error]：AT + 图片发送失败", style="#ff8f8f")
         else:
             data = {"code": data.status_code, "msg": "网络错误"}
         return echoTypeMode(data)
