@@ -9,88 +9,56 @@ import json
 import os
 import re
 
-from rich.console import Console
 import requests
 
 from easyMirai.echo.echoTypeMode import echoTypeMode
 from easyMirai.data.getData import getApi
+from easyMirai.logger import Logger
+
+from easyMirai.globalvar import Uri, BotID, Session, IsSlice
 
 api = getApi("expand")
 
 
 class sendTypeMode:
-    def __init__(self, session: str, uri: str, isSlice: bool):
-        self._session = session
-        self._uri = uri
-        self._isSlice = isSlice
-        self._c = Console()
+    def __init__(self):
+        self._c = Logger(IsSlice().get)
 
     def friend(self, target: int):
-        return friendTypeMode(session=self._session, target=target, url=self._uri, isSlice=self._isSlice)
+        return friendTypeMode(target=target)
 
     def group(self, target: int):
-        return groupTypeMode(session=self._session, target=target, url=self._uri, isSlice=self._isSlice)
+        return groupTypeMode(target=target)
 
     def temp(self, group: int):
-        return tempTypeMode(session=self._session, group=group, url=self._uri, isSlice=self._isSlice)
+        return tempTypeMode(group=group)
 
     def nudge(self, target: int):
-        return nudge(session=self._session, target=target, url=self._uri, isSlice=self._isSlice)
-
-    def recall(self, target: int):
-        print(target)
-        data = {
-            "sessionKey": self._session,
-            "target": target
-        }
-        print(json.dumps(data))
-        data = requests.post(self._uri + str(api["send"]["recall"]), data=json.dumps(data))
-        if data.status_code == 200:
-            data = json.loads(data.text)
-            if not self._isSlice:
-                if data["code"] == 0:
-                    self._c.log("[Notice]：撤回成功",
-                                "详细：" + str(target) + "(get) <- '撤回'",
-                                style="#a4ff8f")
-                else:
-                    self._c.log("[Error]：撤回失败", style="#ff8f8f")
-            elif data["code"] != 0:
-                self._c.log("[Error]：撤回失败", style="#ff8f8f")
-        else:
-            data = {"code": data.status_code, "msg": "网络错误"}
-
-        return echoTypeMode(data)
+        return nudge(target=target)
 
 
 class friendTypeMode:
     # 好友发送消息类型
-    def __init__(self, session, url: str, target: int, isSlice: bool):
-        self._session = session
-        self._uri = url
+    def __init__(self, target: int):
         self._target = target
-        self._c = Console()
-        self._isSlice = isSlice
+        self._c = Logger(IsSlice().get)
 
-    def plain(self, value: str) -> echoTypeMode:
+    def plain(self, text: str) -> echoTypeMode:
+        print(Session().get)
         data = {
-            "sessionKey": self._session,
+            "sessionKey": Session().get,
             "target": self._target,
             "messageChain": [
-                {"type": "Plain", "text": value},
+                {"type": "Plain", "text": text},
             ]
         }
-        data = requests.post(self._uri + api["send"]["friend"]["sendFriendMessage"], data=json.dumps(data))
+        data = requests.post(Uri().get + api["send"]["friend"]["sendFriendMessage"], data=json.dumps(data))
         if data.status_code == 200:
             data = json.loads(data.text)
-            if not self._isSlice:
-                if data["code"] == 0:
-                    self._c.log("[Notice]：文本发送成功",
-                                "详细：" + str(self._target) + "(Friend) <- '" + str(value) + "'",
-                                style="#a4ff8f")
-                else:
-                    self._c.log("[Error]：文本发送失败", style="#ff8f8f")
-            elif data["code"] != 0:
-                self._c.log("[Error]：文本发送失败", style="#ff8f8f")
+            if data["code"] == 0:
+                self._c.Notice("文本发送成功 详细：" + str(BotID().get) + "(Friend) <- '" + str(text) + "'")
+            else:
+                self._c.Error("文本发送失败")
         else:
             data = {"code": data.status_code, "msg": "网络错误"}
         return echoTypeMode(data)
@@ -100,7 +68,7 @@ class friendTypeMode:
         if re.search(uriCompile, value):
             # 如果是一段网址则直接发送
             data = {
-                "sessionKey": self._session,
+                "sessionKey": Session().get,
                 "target": self._target,
                 "messageChain": [
                     {"type": "Image", "url": value},
@@ -109,27 +77,22 @@ class friendTypeMode:
         else:
             # 如果不是网址则上传后发送
             data = {
-                "sessionKey": self._session,
-                "target": self._target,
+                "sessionKey": Session().get,
+                "target": BotID().get,
                 "messageChain": [
                     {
                         "type": "Image",
-                        "url": _uploadImage(value, self._session, "friend", self._uri)
+                        "url": _uploadImage(value, Session().get, "friend", Uri().get)
                     }
                 ]
             }
-        data = requests.post(self._uri + api["send"]["friend"]["sendFriendMessage"], data=json.dumps(data))
+        data = requests.post(Uri().get + api["send"]["friend"]["sendFriendMessage"], data=json.dumps(data))
         if data.status_code == 200:
             data = json.loads(data.text)
-            if not self._isSlice:
-                if data["code"] == 0:
-                    self._c.log("[Notice]：图片发送成功",
-                                "详细：" + str(self._target) + "(Friend) <- '" + str(value) + "'",
-                                style="#a4ff8f")
-                else:
-                    self._c.log("[Error]：图片发送失败", style="#ff8f8f")
-            elif data["code"] != 0:
-                self._c.log("[Error]：图片发送失败", style="#ff8f8f")
+            if data["code"] == 0:
+                self._c.Notice("图片发送成功详细：" + str(BotID().get) + "(Friend) <- '" + str(value) + "'")
+            else:
+                self._c.Error("图片发送失败")
         else:
             data = {"code": data.status_code, "msg": "网络错误"}
 
@@ -138,7 +101,7 @@ class friendTypeMode:
     def face(self, value: int, name: str = "") -> echoTypeMode:
 
         data = {
-            "sessionKey": self._session,
+            "sessionKey": Session().get,
             "target": self._target,
             "messageChain": [
                 {
@@ -149,18 +112,13 @@ class friendTypeMode:
             ]
         }
 
-        data = requests.post(self._uri + api["send"]["friend"]["sendFriendMessage"], data=json.dumps(data))
+        data = requests.post(Uri().get + api["send"]["friend"]["sendFriendMessage"], data=json.dumps(data))
         if data.status_code == 200:
             data = json.loads(data.text)
-            if not self._isSlice:
-                if data["code"] == 0:
-                    self._c.log("[Notice]：表情发送成功",
-                                "详细：" + str(self._target) + "(Friend) <- '" + str(value) + "'",
-                                style="#a4ff8f")
-                else:
-                    self._c.log("[Error]：表情发送失败", style="#ff8f8f")
-            elif data["code"] != 0:
-                self._c.log("[Error]：表情发送失败", style="#ff8f8f")
+            if data["code"] == 0:
+                self._c.Notice("表情发送成功 详细：" + str(BotID().get) + "(Friend) <- '" + str(value) + "'")
+            else:
+                self._c.Error("表情发送失败")
         else:
             data = {"code": data.status_code, "msg": "网络错误"}
 
@@ -171,13 +129,13 @@ class friendTypeMode:
 
     @property
     def poke(self):
-        return poke(uri=self._uri, session=self._session, target=self._target, isSlice=self._isSlice)
+        return poke(target=self._target)
 
     def dice(self, value: int = 1):
 
         data = {
-            "sessionKey": self._session,
-            "target": self._target,
+            "sessionKey": Session().get,
+            "target": BotID().get,
             "messageChain": [
                 {
                     "type": "Dice",
@@ -185,35 +143,48 @@ class friendTypeMode:
                 }
             ]
         }
-        data = requests.post(self._uri + api["send"]["friend"]["sendFriendMessage"], data=json.dumps(data))
+        data = requests.post(Uri().get + api["send"]["friend"]["sendFriendMessage"], data=json.dumps(data))
         if data.status_code == 200:
             data = json.loads(data.text)
-            if not self._isSlice:
-                if data["code"] == 0:
-                    self._c.log("[Notice]：骰子发送成功",
-                                "详细：" + str(self._target) + "(Friend) <- '" + str(value) + "'",
-                                style="#a4ff8f")
-                else:
-                    self._c.log("[Error]：骰子发送失败", style="#ff8f8f")
-            elif data["code"] != 0:
-                self._c.log("[Error]：骰子发送失败", style="#ff8f8f")
+            if data["code"] == 0:
+                self._c.Notice("骰子发送成功 详细：" + str(BotID().get) + "(Friend) <- '" + str(value) + "'")
+            else:
+                self._c.Error("骰子发送失败")
         else:
             data = {"code": data.status_code, "msg": "网络错误"}
         return echoTypeMode(data)
 
+    def recall(self, messageId: int):
+        data = {
+            "sessionKey": Session().get,
+            "messageId": messageId,
+            "target": self._target
+        }
+        data = requests.post(Uri().get + str(api["send"]["recall"]), data=json.dumps(data))
+        if data.status_code == 200:
+            data = json.loads(data.text)
+            if data["code"] == 0:
+                self._c.Notice("撤回成功 详细：" + str(self._target) + "(get) <- '撤回'")
+            else:
+                self._c.Error("撤回失败")
+        else:
+            data = {"code": data.status_code, "msg": "网络错误"}
+
+        return echoTypeMode(data)
+
+    def clone(self, to: int):
+        pass
+
 
 class groupTypeMode:
-    def __init__(self, session: str, url: str, target: int, isSlice: bool):
-        self._uri = url
-        self._session = session
+    def __init__(self, target: int):
         self._target = target
-        self._isSlice = isSlice
-        self._c = Console()
+        self._c = Logger(IsSlice().get)
 
     # 发送群消息类型
     def at(self, target: int, display: str = ""):
         data = {
-            "sessionKey": self._session,
+            "sessionKey": Session().get,
             "target": self._target,
             "messageChain": [
                 {
@@ -224,49 +195,42 @@ class groupTypeMode:
             ]
         }
 
-        data = requests.post(self._uri + api["send"]["group"]["sendGroupMessage"], data=json.dumps(data))
+        data = requests.post(Uri().get + api["send"]["group"]["sendGroupMessage"], data=json.dumps(data))
         if data.status_code == 200:
             data = json.loads(data.text)
-            if not self._isSlice:
-                if data["code"] == 0:
-                    self._c.log("[Notice]：At发送成功",
-                                "详细：" + str(self._target) + "(Group) <- 'at " + str(target) + "'",
-                                style="#a4ff8f")
-                else:
-                    self._c.log("[Error]：At发送失败", style="#ff8f8f")
-            elif data["code"] != 0:
-                self._c.log("[Error]：At发送失败", style="#ff8f8f")
+
+            if data["code"] == 0:
+                self._c.Notice("At发送成功 详细：" + str(BotID().get) + "(Group) <- 'at " + str(target) + "'")
+            else:
+                self._c.Error("At发送失败")
         else:
             data = {"code": data.status_code, "msg": "网络错误"}
 
         return echoTypeMode(data)
 
     def ats(self, target: int, display: str = ""):
-        return AtType(self._uri, self._session, self._target, target, self._target, display, self._isSlice)
+        return AtType(target, self._target, display)
 
     @property
     def atAll(self):
         data = {
-            "sessionKey": self._session,
-            "target": self._target,
+            "sessionKey": Session().get,
+            "target": BotID().get,
             "messageChain": [
                 {
                     "type": "AtAll"
                 }
             ]
         }
-        data = requests.post(self._uri + api["send"]["group"]["sendGroupMessage"], data=json.dumps(data))
+        data = requests.post(Uri().get + api["send"]["group"]["sendGroupMessage"], data=json.dumps(data))
         if data.status_code == 200:
             data = json.loads(data.text)
-            if not self._isSlice:
-                if data["code"] == 0:
-                    self._c.log("[Notice]：AtAll发送成功",
-                                "详细：" + str(self._target) + "(Group) <- 'at " + str(self._target) + "'",
-                                style="#a4ff8f")
-                else:
-                    self._c.log("[Error]：AtAll发送失败", style="#ff8f8f")
-            elif data["code"] != 0:
-                self._c.log("[Error]：AtAll发送失败", style="#ff8f8f")
+
+            if data["code"] == 0:
+                self._c.Notice(
+                    "AtAll发送成功 详细：" + str(BotID().get) + "(Group) <- 'at " + str(BotID().get) + "'")
+            else:
+                self._c.Error("AtAll发送失败")
         else:
             data = {"code": data.status_code, "msg": "网络错误"}
 
@@ -274,25 +238,21 @@ class groupTypeMode:
 
     def plain(self, context: str):
         data = {
-            "sessionKey": self._session,
+            "sessionKey": Session().get,
             "target": self._target,
             "messageChain": [
                 {"type": "Plain", "text": context},
             ]
         }
-        data = requests.post(self._uri + api["send"]["group"]["sendGroupMessage"], data=json.dumps(data))
+        data = requests.post(Uri().get + api["send"]["group"]["sendGroupMessage"], data=json.dumps(data))
         if data.status_code == 200:
             data = json.loads(data.text)
-            if not self._isSlice:
-                if data["code"] == 0:
-                    self._c.log("[Notice]：文本发送成功",
-                                "详细：" + str(self._target) + "(Group " + str(self._target) + ") <- '" + str(
-                                    context) + "'",
-                                style="#a4ff8f")
-                else:
-                    self._c.log("[Error]：文本发送失败", style="#ff8f8f")
-            elif data["code"] != 0:
-                self._c.log("[Error]：文本发送失败", style="#ff8f8f")
+            if data["code"] == 0:
+                self._c.Notice(
+                    "文本发送成功 详细：" + str(BotID().get) + "(Group " + str(BotID().get) + ") <- '" + str(
+                        context) + "'")
+            else:
+                self._c.Error("文本发送失败")
         else:
             data = {"code": data.status_code, "msg": "网络错误"}
 
@@ -302,7 +262,7 @@ class groupTypeMode:
         uriCompile = re.compile(r'[a-zA-z]+://[^\s]*')
         if re.search(uriCompile, value):
             data = {
-                "sessionKey": self._session,
+                "sessionKey": Session().get,
                 "target": self._target,
                 "messageChain": [
                     {"type": "Image", "url": value},
@@ -310,29 +270,26 @@ class groupTypeMode:
             }
         else:
             data = {
-                "sessionKey": self._session,
+                "sessionKey": Session().get,
                 "target": self._target,
                 "messageChain": [
                     {
                         "type": "Image",
-                        "url": _uploadImage(value, self._session, "group", self._uri)
+                        "url": _uploadImage(value, Session().get, "group", Uri().get)
                     }
                 ]
             }
 
-        data = requests.post(self._uri + api["send"]["group"]["sendGroupMessage"], data=json.dumps(data))
+        data = requests.post(Uri().get + api["send"]["group"]["sendGroupMessage"], data=json.dumps(data))
         if data.status_code == 200:
             data = json.loads(data.text)
-            if not self._isSlice:
-                if data["code"] == 0:
-                    self._c.log("[Notice]：图片发送成功",
-                                "详细：" + str(self._target) + "(Group " + str(self._target) + ") <- '" + str(
-                                    value) + "'",
-                                style="#a4ff8f")
-                else:
-                    self._c.log("[Error]：图片发送失败", style="#ff8f8f")
-            elif data["code"] != 0:
-                self._c.log("[Error]：图片发送失败", style="#ff8f8f")
+
+            if data["code"] == 0:
+                self._c.Notice(
+                    "图片发送成功 详细：" + str(BotID().get) + "(Group " + str(BotID().get) + ") <- '" + str(
+                        value) + "'")
+            else:
+                self._c.Error("图片发送失败")
         else:
             data = {"code": data.status_code, "msg": "网络错误"}
 
@@ -340,7 +297,7 @@ class groupTypeMode:
 
     def face(self, faceId: int, name: str = ""):
         data = {
-            "sessionKey": self._session,
+            "sessionKey": Session().get,
             "target": self._target,
             "messageChain": [
                 {
@@ -350,19 +307,16 @@ class groupTypeMode:
                 }
             ]
         }
-        data = requests.post(self._uri + api["send"]["group"]["sendGroupMessage"], data=json.dumps(data))
+        data = requests.post(Uri().get + api["send"]["group"]["sendGroupMessage"], data=json.dumps(data))
         if data.status_code == 200:
             data = json.loads(data.text)
-            if not self._isSlice:
-                if data["code"] == 0:
-                    self._c.log("[Notice]：表情发送成功",
-                                "详细：" + str(self._target) + "(Group " + str(self._target) + ") <- '" + str(
-                                    faceId) + "'",
-                                style="#a4ff8f")
-                else:
-                    self._c.log("[Error]：表情发送失败", style="#ff8f8f")
-            elif data["code"] != 0:
-                self._c.log("[Error]：表情发送失败", style="#ff8f8f")
+            if data["code"] == 0:
+                self._c.Notice(
+                    "表情发送成功 详细：" + str(BotID().get) + "(Group " + str(BotID().get) + ") <- '" + str(
+                        faceId) + "'")
+            else:
+                self._c.Error("表情发送失败")
+
         else:
             data = {"code": data.status_code, "msg": "网络错误"}
 
@@ -371,12 +325,13 @@ class groupTypeMode:
     def voice(self, voiceId: str = "", url: str = "", length: int = 1024):
         pass  # todo 编写voice 等待实验
 
-    def poke(self, group: int):
-        return groupPoke(uri=self._uri, session=self._session, target=self._target, isSlice=self._isSlice, group=group)
+    @property
+    def poke(self):
+        return groupPoke(target=self._target)
 
     def dice(self, value: int = 1):
         data = {
-            "sessionKey": self._session,
+            "sessionKey": Session().get,
             "target": self._target,
             "messageChain": [
                 {
@@ -385,19 +340,33 @@ class groupTypeMode:
                 }
             ]
         }
-        data = requests.post(self._uri + api["send"]["group"]["sendGroupMessage"], data=json.dumps(data))
+        data = requests.post(Uri().get + api["send"]["group"]["sendGroupMessage"], data=json.dumps(data))
         if data.status_code == 200:
             data = json.loads(data.text)
-            if not self._isSlice:
-                if data["code"] == 0:
-                    self._c.log("[Notice]：骰子发送成功",
-                                "详细：" + str(self._target) + "(Group " + str(self._target) + ") <- '" + str(
-                                    value) + "'",
-                                style="#a4ff8f")
-                else:
-                    self._c.log("[Error]：骰子发送失败", style="#ff8f8f")
-            elif data["code"] != 0:
-                self._c.log("[Error]：骰子发送失败", style="#ff8f8f")
+            if data["code"] == 0:
+                self._c.Notice(
+                    "骰子发送成功 详细：" + str(BotID().get) + "(Group " + str(BotID().get) + ") <- '" + str(
+                        value) + "'")
+            else:
+                self._c.Error("骰子发送失败")
+        else:
+            data = {"code": data.status_code, "msg": "网络错误"}
+
+        return echoTypeMode(data)
+
+    def recall(self, messageId: int):
+        data = {
+            "sessionKey": Session().get,
+            "messageId": messageId,
+            "target": self._target
+        }
+        data = requests.post(Uri().get + str(api["send"]["recall"]), data=json.dumps(data))
+        if data.status_code == 200:
+            data = json.loads(data.text)
+            if data["code"] == 0:
+                self._c.Notice("撤回成功 详细：" + str(self._target) + "(get) <- '撤回'")
+            else:
+                self._c.Error("撤回失败")
         else:
             data = {"code": data.status_code, "msg": "网络错误"}
 
@@ -411,71 +380,58 @@ class groupTypeMode:
 
 
 class tempTypeMode:
-    def __init__(self, session: str, url: str, group: int, isSlice: bool):
-        self._url = url
-        self._session = session
-        self._c = Console()
+    def __init__(self, group: int):
+        self._c = Logger(IsSlice().get)
         self._gid = group
-        self._isSlice = isSlice
 
     # 发送群临时消息类型
     def to(self, target: int):
-        return Temp(self._url, self._session, target, self._gid, self._isSlice)
+        return Temp(gid=target)
 
 
 class nudge:
-    def __init__(self, session, url: str, target: int, isSlice: bool):
-        self._url = url
-        self._session = session
+    def __init__(self, target):
         self._target = target
-        self._c = Console()
-        self._isSlice = isSlice
+        self._c = Logger(IsSlice().get)
 
     def _context(self, name: str, by: str, to: str, subject: int):
         data = {
-            "sessionKey": self._session,
+            "sessionKey": Session().get,
             "target": self._target,
             "subject": subject,
             "kind": name
         }
-        data = requests.post(self._url + api["send"][by][to], data=json.dumps(data))
+        data = requests.post(Uri().get + api["send"][by][to], data=json.dumps(data))
         if data.status_code == 200:
             data = json.loads(data.text)
-            if not self._isSlice:
-                if data["code"] == 0:
-                    self._c.log("[Notice]：捏捏发送成功",
-                                "详细：" + str(self._target) + "(" + name + " " + str(subject) + ") <- '捏捏'",
-                                style="#a4ff8f")
-                else:
-                    self._c.log("[Error]：捏捏发送失败", style="#ff8f8f")
+
+            if data["code"] == 0:
+                self._c.Notice(
+                    "捏捏发送成功 详细：" + str(BotID().get) + "(" + name + " " + str(subject) + ") <- '捏捏'")
             else:
-                self._c.log("[Error]：捏捏发送失败", style="#ff8f8f")
+                self._c.Error("捏捏发送失败")
         else:
             data = {"code": data.status_code, "msg": "网络错误"}
         return echoTypeMode(data)
 
     @property
     def friend(self):
-        return self._context("Friend", "nudge", "sendNudge", self._target)
+        return self._context("Friend", "nudge", "sendNudge", BotID().get)
 
     def group(self, gid: int):
         return self._context("Group", "nudge", "sendNudge", gid)
 
 
 class groupPoke:
-    def __init__(self, uri: str, session: str, target: int, isSlice: bool, group: int):
-        self._url = uri
-        self._session = session
+    def __init__(self, target):
         self._target = target
-        self._isSlice = isSlice
-        self._group = group
-        self._c = Console()
+        self._c = Logger(IsSlice().get)
 
     def _context(self, name: str, to: str):
         data = {
-            "sessionKey": self._session,
+            "sessionKey": Session().get,
             "target": self._target,
-            "group": self._group,
+            "group": self._target,
             "messageChain": [
                 {
                     "type": "Poke",
@@ -483,17 +439,13 @@ class groupPoke:
                 }
             ]
         }
-        data = requests.post(self._url + api["send"]["group"][to], data=json.dumps(data))
+        data = requests.post(Uri().get + api["send"]["group"][to], data=json.dumps(data))
         if data.status_code == 200:
             data = json.loads(data.text)
-            if not self._isSlice:
-                if data["code"] == 0:
-                    self._c.log("[Notice]：戳一戳发送成功", "详细：" + str(self._target) + "(Group) <- '" + name + "'",
-                                style="#a4ff8f")
-                else:
-                    self._c.log("[Error]：戳一戳发送失败", style="#ff8f8f")
-            elif data["code"] != 0:
-                self._c.log("[Error]：戳一戳发送失败", style="#ff8f8f")
+            if data["code"] == 0:
+                self._c.Notice("戳一戳发送成功 详细：" + str(BotID().get) + "(Group) <- '" + name + "'")
+            else:
+                self._c.Error("戳一戳发送失败")
         else:
             data = {"code": data.status_code, "msg": "网络错误"}
 
@@ -509,16 +461,13 @@ class groupPoke:
 
 
 class poke:
-    def __init__(self, uri: str, session: str, target: int, isSlice: bool):
-        self._url = uri
-        self._session = session
+    def __init__(self, target):
         self._target = target
-        self._isSlice = isSlice
-        self._c = Console()
+        self._c = Logger(IsSlice().get)
 
     def _context(self, name: str, to: str):
         data = {
-            "sessionKey": self._session,
+            "sessionKey": Session().get,
             "target": self._target,
             "messageChain": [
                 {
@@ -527,17 +476,13 @@ class poke:
                 }
             ]
         }
-        data = requests.post(self._url + api["send"]["friend"][to], data=json.dumps(data))
+        data = requests.post(Uri().get + api["send"]["friend"][to], data=json.dumps(data))
         if data.status_code == 200:
             data = json.loads(data.text)
-            if not self._isSlice:
-                if data["code"] == 0:
-                    self._c.log("[Notice]：戳一戳发送成功", "详细：" + str(self._target) + "(Friend) <- '" + name + "'",
-                                style="#a4ff8f")
-                else:
-                    self._c.log("[Error]：戳一戳发送失败", style="#ff8f8f")
-            elif data["code"] != 0:
-                self._c.log("[Error]：戳一戳发送失败", style="#ff8f8f")
+            if data["code"] == 0:
+                self._c.Notice("戳一戳发送成功 详细：" + str(BotID().get) + "(Friend) <- '" + name + "'")
+            else:
+                self._c.Error("戳一戳发送失败")
         else:
             data = {"code": data.status_code, "msg": "网络错误"}
 
@@ -567,35 +512,27 @@ def _uploadImage(path: str, session, name, url: str):
 
 
 class Temp:
-    def __init__(self, url, session, target, gid, isSlice: bool):
-        self._url = url
-        self._session = session
-        self._target = target
+    def __init__(self, gid):
         self._gid = gid
-        self._isSlice = isSlice
-        self._c = Console()
+        self._c = Logger(IsSlice().get)
 
     def plain(self, context: str):
         data = {
-            "sessionKey": self._session,
-            "qq": self._target,
+            "sessionKey": Session().get,
+            "qq": BotID().get,
             "group": self._gid,
             "messageChain": [
                 {"type": "Plain", "text": context},
             ]
         }
-        data = requests.post(self._url + api["send"]["temp"]["sendTempMessage"], data=json.dumps(data))
+        data = requests.post(Uri().get + api["send"]["temp"]["sendTempMessage"], data=json.dumps(data))
         if data.status_code == 200:
             data = json.loads(data.text)
-            if not self._isSlice:
-                if data["code"] == 0:
-                    self._c.log("[Notice]：文本发送成功",
-                                "详细：" + str(self._target) + "(Temp " + str(self._gid) + ") <- '" + str(context) + "'",
-                                style="#a4ff8f")
-                else:
-                    self._c.log("[Error]：文本发送失败", style="#ff8f8f")
-            elif data["code"] != 0:
-                self._c.log("[Error]：文本发送失败", style="#ff8f8f")
+            if data["code"] == 0:
+                self._c.Notice("文本发送成功 详细：" + str(BotID().get) + "(Temp " + str(self._gid) + ") <- '" + str(
+                    context) + "'")
+            else:
+                self._c.Error("文本发送失败")
         else:
             data = {"code": data.status_code, "msg": "网络错误"}
         return echoTypeMode(data)
@@ -604,8 +541,8 @@ class Temp:
         rec = re.compile(r'[a-zA-z]+://[^\s]*')
         if re.search(rec, path):
             data = {
-                "sessionKey": self._session,
-                "qq": self._target,
+                "sessionKey": Session().get,
+                "qq": BotID().get,
                 "group": self._gid,
                 "messageChain": [
                     {"type": "Image", "url": path},
@@ -613,36 +550,32 @@ class Temp:
             }
         else:
             data = {
-                "sessionKey": self._session,
-                "qq": self._target,
+                "sessionKey": Session().get,
+                "qq": BotID().get,
                 "group": self._gid,
                 "messageChain": [
                     {
                         "type": "Image",
-                        "url": _uploadImage(path, self._session, "group", self._url)
+                        "url": _uploadImage(path, Session().get, "group", Uri().get)
                     }
                 ]
             }
-        data = requests.post(self._url + api["send"]["temp"]["sendTempMessage"], data=json.dumps(data))
+        data = requests.post(Uri().get + api["send"]["temp"]["sendTempMessage"], data=json.dumps(data))
         if data.status_code == 200:
             data = json.loads(data.text)
-            if not self._isSlice:
-                if data["code"] == 0:
-                    self._c.log("[Notice]：图片发送成功",
-                                "详细：" + str(self._target) + "(Temp " + str(self._gid) + ") <- '" + str(path) + "'",
-                                style="#a4ff8f")
-                else:
-                    self._c.log("[Error]：图片发送失败", style="#ff8f8f")
-            elif data["code"] != 0:
-                self._c.log("[Error]：图片发送失败", style="#ff8f8f")
+            if data["code"] == 0:
+                self._c.Notice("图片发送成功 详细：" + str(BotID().get) + "(Temp " + str(self._gid) + ") <- '" + str(
+                    path) + "'")
+            else:
+                self._c.Error("图片发送失败")
         else:
             data = {"code": data.status_code, "msg": "网络错误"}
         return echoTypeMode(data)
 
     def face(self, faceId: int, name: str = ""):
         data = {
-            "sessionKey": self._session,
-            "qq": self._target,
+            "sessionKey": Session().get,
+            "qq": BotID().get,
             "group": self._gid,
             "messageChain": [
                 {
@@ -652,60 +585,49 @@ class Temp:
                 }
             ]
         }
-        data = requests.post(self._url + api["send"]["temp"]["sendTempMessage"], data=json.dumps(data))
+        data = requests.post(Uri().get + api["send"]["temp"]["sendTempMessage"], data=json.dumps(data))
         if data.status_code == 200:
             data = json.loads(data.text)
-            if not self._isSlice:
-                if data["code"] == 0:
-                    self._c.log("[Notice]：表情发送成功",
-                                "详细：" + str(self._target) + "(Group " + str(self._gid) + ") <- '" + str(faceId) + "'",
-                                style="#a4ff8f")
-                else:
-                    self._c.log("[Error]：表情发送失败", style="#ff8f8f")
-            elif data["code"] != 0:
-                self._c.log("[Error]：表情发送失败", style="#ff8f8f")
+            if data["code"] == 0:
+                self._c.Notice(
+                    "表情发送成功 详细：" + str(BotID().get) + "(Group " + str(self._gid) + ") <- '" + str(
+                        faceId) + "'")
+            else:
+                self._c.Error("表情发送失败")
         else:
             data = {"code": data.status_code, "msg": "网络错误"}
         return echoTypeMode(data)
 
 
 class AtType:  # at后添加字符串
-    def __init__(self, url, session, _target, target, gid, display, isSlice: bool):
-        self._url = url
-        self._session = session
-        self._target = _target  # 机器人qq号
+    def __init__(self, target, gid, display):
         self._gid = gid
-        self._isSlice = isSlice
-        self._c = Console()
+        self._c = Logger(IsSlice().get)
         self.target = target
         self.display = display
 
     def plain(self, context):  # at后追加文本
         data = {
-            "sessionKey": self._session,
-            "target": self._target,
+            "sessionKey": Session().get,
+            "target": BotID().get,
             "messageChain": [
                 {
                     "type": "At",
                     "target": self.target,
                     "display": self.display
                 },
-                {"type": "Plain", "text": " "+context},
+                {"type": "Plain", "text": " " + context},
             ]
         }
-        data = requests.post(self._url + api["send"]["group"]["sendGroupMessage"], data=json.dumps(data))
+        data = requests.post(Uri().get + api["send"]["group"]["sendGroupMessage"], data=json.dumps(data))
         if data.status_code == 200:
             data = json.loads(data.text)
-            if not self._isSlice:
-                if data["code"] == 0:
-                    self._c.log("[Notice]：AT + 文本发送成功",
-                                "详细：" + str(self._target) + "(Group " + str(self._target) + ") <- '" + str(
-                                    context) + "'",
-                                style="#a4ff8f")
-                else:
-                    self._c.log("[Error]：AT + 文本发送失败", style="#ff8f8f")
-            elif data["code"] != 0:
-                self._c.log("[Error]：AT + 文本发送失败", style="#ff8f8f")
+            if data["code"] == 0:
+                self._c.Notice(
+                    "AT + 文本发送成功 详细：" + str(BotID().get) + "(Group " + str(BotID().get) + ") <- '" + str(
+                        context) + "'")
+            else:
+                self._c.Error("AT + 文本发送失败")
         else:
             data = {"code": data.status_code, "msg": "网络错误"}
 
@@ -715,8 +637,8 @@ class AtType:  # at后添加字符串
         rec = re.compile(r'[a-zA-z]+://[^\s]*')
         if re.search(rec, path):
             data = {
-                "sessionKey": self._session,
-                "qq": self._target,
+                "sessionKey": Session().get,
+                "qq": BotID().get,
                 "group": self._gid,
                 "messageChain": [
                     {
@@ -729,8 +651,8 @@ class AtType:  # at后添加字符串
             }
         else:
             data = {
-                "sessionKey": self._session,
-                "qq": self._target,
+                "sessionKey": Session().get,
+                "qq": BotID().get,
                 "group": self._gid,
                 "messageChain": [
                     {
@@ -740,22 +662,19 @@ class AtType:  # at后添加字符串
                     },
                     {
                         "type": "Image",
-                        "url": _uploadImage(path, self._session, "group", self._url)
+                        "url": _uploadImage(path, Session().get, "group", Uri().get)
                     }
                 ]
             }
-        data = requests.post(self._url + api["send"]["group"]["sendGroupMessage"], data=json.dumps(data))
+        data = requests.post(Uri().get + api["send"]["group"]["sendGroupMessage"], data=json.dumps(data))
         if data.status_code == 200:
             data = json.loads(data.text)
-            if not self._isSlice:
-                if data["code"] == 0:
-                    self._c.log("[Notice]：AT + 图片发送成功",
-                                "详细：" + str(self._target) + "(Temp " + str(self._gid) + ") <- '" + str(path) + "'",
-                                style="#a4ff8f")
-                else:
-                    self._c.log("[Error]：AT + 图片发送失败", style="#ff8f8f")
-            elif data["code"] != 0:
-                self._c.log("[Error]：AT + 图片发送失败", style="#ff8f8f")
+            if data["code"] == 0:
+                self._c.Notice(
+                    "AT + 图片发送成功 详细：" + str(BotID().get) + "(Temp " + str(self._gid) + ") <- '" + str(
+                        path) + "'")
+            else:
+                self._c.Error("AT + 图片发送失败")
         else:
             data = {"code": data.status_code, "msg": "网络错误"}
         return echoTypeMode(data)

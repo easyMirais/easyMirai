@@ -13,7 +13,7 @@
 """
 
 
-from .method import (
+from easyMirai.method import (
     Mirai,
     Init
 )

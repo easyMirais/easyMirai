@@ -10,60 +10,45 @@
 import json
 import os
 
-from rich.console import Console
 import requests
 
 from easyMirai.echo.echoTypeMode import echoTypeMode
 from easyMirai.data.getData import getApi
+
+from easyMirai.globalvar import Uri, Session, IsSlice
+from easyMirai.logger import Logger
 
 api = getApi("expand")
 
 
 class uploadTypeMode:
     # 上传模式
-    def __init__(self, session: str, uri: str, isSlice: bool):
-        self._session = session
-        self._url = uri
-        self._isSlice = isSlice
-
     def __repr__(self):
         return "请选择上传模式"
 
     def image(self, path: str):
-        return UploadImage(self._url, self._session, path, self._isSlice)
+        return UploadImage(path)
 
 
 class UploadImage:
-    def __init__(self, uri: str, session: str, path: str, isSlice: bool):
-        self._uri = uri
-        self._session = session
+    def __init__(self, path: str):
         self._path = path
-        self._isSlice = isSlice
-        self._c = Console()
+        self._c = Logger(IsSlice().get)
 
     def _context(self, name: str, subject: str):
-        message = {"sessionKey": self._session, "type": name}
-        subject = os.path.abspath(os.path.join(os.path.dirname(
-            __file__), "../", f"{subject.lower()}"))  # todo 打包时一定注意！！！！
-        onfiles = {'img': ('send.png', open(subject, 'rb'), 'image/png', {})}
-        data = requests.request(method="POST",
-                                url=self._uri + "/uploadImage", data=message, files=onfiles)
+        message = {"sessionKey": Session().get, "type": name}
+        subject = os.path.abspath(os.path.join(os.path.dirname(__file__), "../", f"{subject.lower()}"))
+        onFiles = {'img': ('send.png', open(subject, 'rb'), 'image/png', {})}
+        data = requests.request(method="POST", url=Uri().get + "/uploadImage", data=message, files=onFiles)
         if data.status_code == 200:
             data = json.loads(data.text)
             if "code" not in data:
-                if not self._isSlice:
-                    if "code" not in data:
-                        self._c.log("[Notice]：图片上传成功",
-                                    "详细：Cloud(" + name + " " + str(subject) + ") <- '" + self._path + "'",
-                                    style="#a4ff8f")
-                    else:
-                        self._c.log("[Error]：图片上传失败", style="#ff8f8f")
-                elif data["code"] != 0:
-                    self._c.log("[Error]：图片上传失败", style="#ff8f8f")
+                self._c.Notice("图片上传成功 详细：Cloud(" + name + " " + str(subject) + ") <- '" + self._path + "'")
             else:
-                data = {"code": data.status_code, "msg": "网络错误"}
-
-            return echoTypeMode(data)
+                self._c.Error("图片上传失败")
+        else:
+            data = {"code": data.status_code, "msg": "网络错误"}
+        return echoTypeMode(data)
 
     @property
     def friend(self):
