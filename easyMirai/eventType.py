@@ -7,11 +7,13 @@
 # @Uri      : https://sfnco.com.cn/
 import json
 
-from rich.console import Console
 import requests
 
 from easyMirai.echo.echoTypeMode import echoTypeMode
 from easyMirai.data.getData import getApi
+
+from easyMirai.globalvar import Uri, Session, IsSlice
+from easyMirai.logger.logger import Logger
 
 api = getApi("expand")
 
@@ -28,46 +30,38 @@ class eventTypeMode:
         return "请选择事件处理类型"
 
     def newFriend(self, target: int, groupId: int = 0):
-        return EventNewFriend(self._url, self._session, target, self._eventId, groupId, self._isSlice)
+        return EventNewFriend(target, self._eventId, groupId)
 
     def newJoinGroup(self, target: int, groupId: int):
-        return EventJoinGroup(self._url, self._session, target, self._eventId, groupId, self._isSlice)
+        return EventJoinGroup(target, self._eventId, groupId)
 
-    def newBotJoinGroup(self, target: int, groupId: int, fromId: int):
-        return EventBotJoinGroup(self._url, self._session, target, self._eventId, groupId, fromId, self._isSlice)
+    def newBotJoinGroup(self, groupId: int, fromId: int):
+        return EventBotJoinGroup(self._eventId, groupId, fromId)
 
 
 class EventNewFriend:
-    def __init__(self, url, session, target, eventId, group, isSlice: bool):
-        self._url = url
-        self._session = session
+    def __init__(self, target, eventId, group):
         self._target = target
         self._eventId = eventId
         self._groupId = group
-        self._isSlice = isSlice
-        self._c = Console()
+        self._c = Logger(IsSlice().get)
 
     def _request(self, code: int, eventId, message):
         data = {
-            "sessionKey": self._session,
+            "sessionKey": Session().get,
             "eventId": self._eventId,
             "fromId": eventId,
             "groupId": self._groupId,
             "operate": code,
             "message": message
         }
-        data = requests.post(self._url + api["event"]["newFriend"], data=json.dumps(data))
+        data = requests.post(Uri().get + api["event"]["newFriend"], data=json.dumps(data))
         if data.status_code == 200:
             data = json.loads(data.text)
-            if not self._isSlice:
-                if data["code"] == 0:
-                    self._c.log("[Notice]：好友添加事件处理成功",
-                                "详细：" + str(self._target) + "(Friend) <- '" + str(code) + "'",
-                                style="#a4ff8f")
-                else:
-                    self._c.log("[Error]：好友添加事件处理失败", style="#ff8f8f")
-            elif data["code"] != 0:
-                self._c.log("[Error]：好友添加事件处理失败", style="#ff8f8f")
+            if data["code"] == 0:
+                self._c.Notice("好友添加事件处理成功 详细：" + str(self._target) + "(Friend) <- '" + str(code) + "'")
+            else:
+                self._c.Error("好友添加事件处理失败")
         else:
             data = {"code": data.status_code, "msg": "网络错误"}
 
@@ -84,36 +78,28 @@ class EventNewFriend:
 
 
 class EventJoinGroup:
-    def __init__(self, url, session, target, eventId, groupId, isSlice: bool):
-        self._url = url
-        self._session = session
+    def __init__(self, target, eventId, groupId):
         self._target = target
         self._eventId = eventId
         self._groupId = groupId
-        self._isSlice = isSlice
-        self._c = Console()
+        self._c = Logger(IsSlice().get)
 
     def _request(self, code: int, eventId, message):
         data = {
-            "sessionKey": self._session,
+            "sessionKey": Session().get,
             "eventId": self._eventId,
             "fromId": eventId,
             "groupId": self._groupId,
             "operate": code,
             "message": message
         }
-        data = requests.post(self._url + api["event"]["joinGroup"], data=json.dumps(data))
+        data = requests.post(Uri().get + api["event"]["joinGroup"], data=json.dumps(data))
         if data.status_code == 200:
             data = json.loads(data.text)
-            if not self._isSlice:
-                if data["code"] == 0:
-                    self._c.log("[Notice]：用户入群申请事件处理成功",
-                                "详细：" + str(self._target) + "(Group) <- '" + str(code) + "'",
-                                style="#a4ff8f")
-                else:
-                    self._c.log("[Error]：用户入群申请事件处理失败", style="#ff8f8f")
-            elif data["code"] != 0:
-                self._c.log("[Error]：用户入群申请事件处理失败", style="#ff8f8f")
+            if data["code"] == 0:
+                self._c.Notice("用户入群申请事件处理成功 详细：" + str(self._target) + "(Group) <- '" + str(code) + "'")
+            else:
+                self._c.Error("用户入群申请事件处理失败")
         else:
             data = {"code": data.status_code, "msg": "网络错误"}
 
@@ -136,37 +122,28 @@ class EventJoinGroup:
 
 
 class EventBotJoinGroup:
-    def __init__(self, url, session, target, eventId, groupId, fromId, isSlice: bool):
-        self._url = url
-        self._session = session
-        self._target = target
+    def __init__(self, eventId, groupId, fromId):
         self._eventId = eventId
         self._groupId = groupId
         self._fromId = fromId
-        self._isSlice = isSlice
-        self._c = Console()
+        self._c = Logger(IsSlice().get)
 
     def _request(self, code: int, message):
         data = {
-            "sessionKey": self._session,
+            "sessionKey": Session().get,
             "eventId": self._eventId,
             "fromId": self._fromId,
             "groupId": self._groupId,
             "operate": code,
             "message": message
         }
-        data = requests.get(self._url + api["event"]["newFriend"], data=json.dumps(data))
+        data = requests.get(Uri().get + api["event"]["newFriend"], data=json.dumps(data))
         if data.status_code == 200:
             data = json.loads(data.text)
-            if not self._isSlice:
-                if data["code"] == 0:
-                    self._c.log("[Notice]：用户入群申请事件处理成功",
-                                "详细：" + str(self._target) + "(Friend) <- '" + str(code) + "'",
-                                style="#a4ff8f")
-                else:
-                    self._c.log("[Error]：用户入群申请事件处理失败", style="#ff8f8f")
-            elif data["code"] != 0:
-                self._c.log("[Error]：用户入群申请事件处理失败", style="#ff8f8f")
+            if data["code"] == 0:
+                self._c.Notice("用户入群申请事件处理成功 详细：" + str(self._target) + "(Friend) <- '" + str(code) + "'")
+            else:
+                self._c.Error("[Error]：用户入群申请事件处理失败")
         else:
             data = {"code": data.status_code, "msg": "网络错误"}
 

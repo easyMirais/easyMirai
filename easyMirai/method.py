@@ -104,7 +104,7 @@ class Mirai(Init):
         return actionTypeMode()
 
     def event(self, eventId: int):
-        return eventTypeMode(session=self._session, uri=str(self._url), eventId=eventId, isSlice=self._isSlice)
+        return eventTypeMode(session=Session().get, uri=Uri().get, eventId=eventId, isSlice=IsSlice().get)
 
 
 @atexit.register
@@ -115,11 +115,11 @@ def _stop():
         "qq": BotID().get
     }
     try:
-        data = req.post(url=_config["data"]["url"] + _config["release"], data=json.dumps(data))
+        data = req.post(url=Uri().get + _config["release"], data=json.dumps(data))
     except Exception as re:
         _requests = re
         exit(404)
     if data.status_code == 200:
         data = json.loads(data.text)
         if data["code"] == 0:
-            _c.Notice("释放Session成功 详细：session=" + _config["data"]["session"])
+            _c.Notice("释放Session成功 详细：session=" + Session().get)
