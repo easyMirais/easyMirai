@@ -1,4 +1,4 @@
-# easyMirai
+# easyMirai（已停止维护）
 
 ![](./Docs/assets/image/title-v2.png)
 
