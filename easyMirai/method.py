@@ -136,7 +136,10 @@ def _stop():
     except Exception as re:
         _requests = re
         exit(404)
-    if data.status_code == 200:
-        data = json.loads(data.text)
-    if data["code"] == 0:
-        _c.log("[Notice]：释放Session成功", "详细：session=" + _config["data"]["session"], style="#a4ff8f")
+    try:
+        if data.status_code == 200:
+            data = json.loads(data.text)
+        if data["code"] == 0:
+            _c.log("[Notice]：释放Session成功", "详细：session=" + _config["data"]["session"], style="#a4ff8f")
+    except TypeError:
+        _c.log("[Error]：释放Session失败", "详细：session=" + _config["data"]["session"], style="#ff8f8f")
