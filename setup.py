@@ -18,7 +18,7 @@ URL = 'https://github.com/easyMirais/easyMirai'
 EMAIL = 'sfnco-miku@outlook.com'
 AUTHOR = 'ExMikuPro & HexMikuMax'
 REQUIRES_PYTHON = '>=3.6.0'
-VERSION = '2.33.36A'  # 版本号命名规范请参照 https://github.com/easyMirais/easyMirai/blob/master/Docs/VersionNumber.md
+VERSION = '2.34.36'  # 版本号命名规范请参照 https://github.com/easyMirais/easyMirai/blob/master/Docs/VersionNumber.md
 
 
 # What packages are required for this module to be executed?
